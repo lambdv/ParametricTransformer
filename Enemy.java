@@ -18,8 +18,7 @@ public class Enemy {
         return DEFMultiplier;
     }
 
-    double ElementalResistanceMultiplier(){
-        double ElementalResistanceShred = 0;
+    double ElementalResistanceMultiplier(double ElementalResistanceShred){
 
         if(this.ElementalResistance - ElementalResistanceShred < 0){
             return 1-((this.ElementalResistance - ElementalResistanceShred)/2);

@@ -1,6 +1,5 @@
 public class Character{
 
-
     private String Name;
     private double baseHP;
     private double HPpercent;
@@ -26,26 +25,35 @@ public class Character{
 
 
 
-    private double Attack;
-
-
-
-    public Character(String Name, double Attack, double CritRate, double CritDMG) {
+    public Character(String Name) {
         this.Name = Name;
-        this.Attack = Attack;
-        this.CritRate = CritRate;
-        this.CritDMG = CritDMG;
     }
 
-    //getters
 
-    double getAttack(){return this.Attack; }
+    //getters
+    double totalATK(){
+        return (baseATK * (1+ATKpercent) + flatATK);
+    }
+
+    double totalATK(double additionalATKpercent, double additionalflatATK){
+        return (baseATK * (1+ATKpercent + additionalATKpercent) + (flatATK + additionalflatATK));
+    }
+
+    double CritMultiplier(){
+        return (1+((CritRate)*(CritDMG)));
+    }
+
+
+    //double dmg = totalATK() * 2.00 * CritMultiplier * ElementalDMGBonus * enemy.DEFMultiplier() * enemy.ElementalResistanceMultiplier();
+
+    //stat getters
     double getCritRate(){return this.CritRate; }
     double getCritDMG(){return this.CritDMG; }
 
-    //setter
-    double setAttack(double Attack){return this.Attack = Attack;}
+    //setters
     double setCritRate(double CritRate){return this.CritRate = CritRate; }
     double setCritDMG(double CritDMG){return this.CritDMG = CritDMG; }
+
+    //adders
     
 }
