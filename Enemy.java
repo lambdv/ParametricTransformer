@@ -13,7 +13,8 @@ public class Enemy {
         int characterLevel = 90;
         double defShred = 0;
         double defIgnore = 0;
-        double DEFMultiplier = ((characterLevel+100)/((characterLevel+100)+this.Level+100)) * (1-defShred) * (1-defIgnore);
+        double DEFMultiplier = ((double) (characterLevel + 100) / ( (double) (characterLevel + 100) + (double) this.Level + 100)) * (1 - defShred) * (1 - defIgnore);
+        
         return DEFMultiplier;
     }
 
