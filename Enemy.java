@@ -14,17 +14,24 @@ public class Enemy {
         double defShred = 0;
         double defIgnore = 0;
         double DEFMultiplier = ((double) (characterLevel + 100) / ( (double) (characterLevel + 100) + (double) this.Level + 100)) * (1 - defShred) * (1 - defIgnore);
-        
         return DEFMultiplier;
     }
 
     double ElementalResistanceMultiplier(double ElementalResistanceShred){
-
         if(this.ElementalResistance - ElementalResistanceShred < 0){
             return 1-((this.ElementalResistance - ElementalResistanceShred)/2);
         }
         else{
             return 1-(this.ElementalResistance - ElementalResistanceShred);
+        }
+    }
+
+    double PhysicalResistanceMultiplier(double PhysicalResistanceShred){
+        if(this.PhysicalResistance - PhysicalResistanceShred < 0){
+            return 1-((this.PhysicalResistance - PhysicalResistanceShred)/2);
+        }
+        else{
+            return 1-(this.PhysicalResistance - PhysicalResistanceShred);
         }
     }
 }
