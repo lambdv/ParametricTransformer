@@ -1,10 +1,13 @@
 public class Weapon {
+
+    //fields
     private String Name;
     private double baseATK;
     private String Stat;
     private double StatValue;
     private int Refinement;
 
+    //constuctor
     public Weapon(String Name , double baseATK, String Stat, double StatValue, int Refinement){
         this.Name = Name;
         this.baseATK = baseATK;

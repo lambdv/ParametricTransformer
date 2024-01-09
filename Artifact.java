@@ -7,11 +7,13 @@ public class Artifact {
         CIRCLET
     }
 
+    //fields
     private ArtifactType type;
     private int rarity;
     public String mainStat;
     public double mainStatValue;
 
+    //constructor
     public Artifact(ArtifactType type, int rarity, String mainStat, double mainStatValue){
         this.type = type;
         this.rarity = rarity;
@@ -40,7 +42,6 @@ public class Artifact {
                 case "healingbonus": mainStatValue = 0.359; break; 
             }
         }
-
     }
 
     //getter

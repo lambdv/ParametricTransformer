@@ -1,2 +1,5 @@
 *.class
+.vscode/
 techstack
+.gitignore
+.gitatributes
