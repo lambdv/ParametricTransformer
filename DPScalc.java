@@ -19,8 +19,6 @@ public class DPScalc{
 
           double multi = (character.totalATK()) * character.CritMultiplier() * 1+character.getElementalDMGBonus() * enemy.DEFMultiplier() * enemy.ElementalResistanceMultiplier(0);
           
-
-
           damage.put("n1 vape", multi * 0.789 * 8);
           damage.put("n2 vape", multi * 0.812 * 8);
           damage.put("ca vape", multi * 2.287 * 8);
@@ -33,8 +31,6 @@ public class DPScalc{
           for(double DMG : damage.values()) DPR += DMG;
           return Math.round(DPR);
      }
-
-
 
 
      public static Map<String, Character> loadCharacterData() {
@@ -65,7 +61,7 @@ public class DPScalc{
      public static double optimizeSubs(Character character) { //global search for optimum value of kqmc substat rolls
           double currentDPR = 0;
           double maxDPR = 0;
-          character.addFixedSubs();
+          character.addFixedSubs(5);
 
           int fluidSubsLimit = 20 - (character.getFlower().getRarity() == 4 ? 2 : 0) - (character.getFeather().getRarity() == 4 ? 2 : 0) - - (character.getSands().getRarity() == 4 ? 2 : 0) - (character.getGoblet().getRarity() == 4 ? 2 : 0) - (character.getCirclet().getRarity() == 4 ? 2 : 0);
           int currentRolls = 0;
@@ -82,15 +78,12 @@ public class DPScalc{
           int CDRollConstraint = 10 - (character.getCirclet().getMainStat() == "CritDMG" ? 2 : 0);
           int ERRollConstraint = 10 - (character.getSands().getMainStat() == "ER%" ? 2 : 0);
 
-          //dirivatives (rate of change in dpr per roll increase)
 
           while(currentRolls < fluidSubsLimit){
-
                if(character.getEnergyRecharge() < character.getEnergyRechargeRequirement()){ 
                     character.rollER(5);
                     currentRolls++;
                }
-
                double d_flatHPRolls = 0;
                double d_HPRolls = 0;
                double d_flatATKRolls = 0; 
@@ -150,18 +143,17 @@ public class DPScalc{
                else if (d_CRRolls > d_flatHPRolls && d_CRRolls > d_HPRolls && d_CRRolls > d_flatATKRolls && d_CRRolls > d_ATKRolls && d_CRRolls > d_flatDEFRolls && d_CRRolls > d_EMRolls && d_CRRolls > d_CDRolls && d_CRRolls > d_ERRolls) { character.rollCR(5);}
                else if (d_CDRolls > d_CRRolls && d_CDRolls > d_flatHPRolls && d_CDRolls > d_HPRolls && d_CDRolls > d_flatATKRolls && d_CDRolls > d_ATKRolls && d_CDRolls > d_flatDEFRolls && d_CDRolls > d_EMRolls && d_CDRolls > d_ERRolls) { character.rollCD(5);}
                else if (d_ERRolls > d_CRRolls && d_ERRolls > d_flatHPRolls && d_ERRolls > d_HPRolls && d_ERRolls > d_flatATKRolls && d_ERRolls > d_ATKRolls && d_ERRolls > d_flatDEFRolls && d_ERRolls > d_EMRolls && d_ERRolls > d_CDRolls) { character.rollER(5);}
-               else {break;}
+               
                currentRolls++;
                maxDPR = rotation(character);
           }
-
           return maxDPR;
      }
 
      
      public static void main(String[] args) { //main 
 
-          characters = loadCharacterData(); //load character data into characters map
+          characters = loadCharacterData();
 
           Character hutao = characters.get("Hutao"); 
           hutao.setERR(0);

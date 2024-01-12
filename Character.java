@@ -230,7 +230,7 @@ public class Character{
 
 
     //adders
-    public double rollFlatHP(int rarity){
+    public double rollFlatHP( int rarity){
         flatHPRolls++;
         addStat("flatHP", 253.94 * (rarity == 5 ? 1.0 : 0.8));
         return flatHPRolls;
@@ -290,38 +290,18 @@ public class Character{
         return ERRolls;
     }
 
-    public void addFixedSubs(){
-        rollFlatHP(5);
-        rollFlatHP(5);
-
-        rollHP(5);
-        rollHP(5);
-
-        rollFlatATK(5);
-        rollFlatATK(5);
-
-        rollATK(5);
-        rollATK(5);
-
-        rollFlatDEF(5);
-        rollFlatDEF(5);
-
-        rollDEF(5);
-        rollDEF(5);
-
-        rollEM(5);
-        rollEM(5);
-
-        rollCR(5);
-        rollCR(5);
-
-        rollCD(5);
-        rollCD(5);
-
-        rollER(5);
-        rollER(5);
+    public void addFixedSubs(int rarity){
+        for(int i = 0 ; i < 2 ; i++){
+            rollFlatHP(rarity);
+            rollHP(rarity);
+            rollFlatATK(rarity);
+            rollATK(rarity);
+            rollFlatDEF(rarity);
+            rollDEF(rarity);
+            rollEM(rarity);
+            rollCR(rarity);
+            rollCD(rarity);
+            rollER(rarity);
+        }
     }
-
-
-    
 }
