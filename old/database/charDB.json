@@ -1,0 +1,36 @@
+[
+    {
+        "name": "amber",
+        "rarity": 4,
+        "element": "pyro",
+        "weapon": "bow",
+        "basestats": [
+            [
+                {"level": 90},
+                {"baseHP": 9461},
+                {"baseDEF": 601},
+                {"ATK%": 24.0}
+            ]
+        ],
+        "ascensionStat": "ATK%"
+    },
+
+    {
+        "name": "kaeya",
+        "rarity": 4,
+        "element": "cryo",
+        "weapon": "sword",
+        "basestats": [
+            [
+                {"level": 90},
+                {"baseHP": 10302},
+                {"baseDEF": 745},
+                {"ATK%": 24.0}
+            ]
+        ],
+        "ascensionStat": "ATK%"
+    }
+    
+
+
+]

@@ -1,5 +1,6 @@
 *.class
 .vscode/
-techstack
 .gitignore
 .gitatributes
+/bin/
+toadd.md
