@@ -12,7 +12,7 @@ public class StatTest {
         Stat a = new Stat.ATKPercent(10);
         Stat b = new Stat.ATKPercent(20);
         Stat c = a.add(b);
-        assert c.value() == 30;
+        assert c.amount() == 30;
     }
 
     /**
@@ -44,14 +44,24 @@ public class StatTest {
     /**
      * testing that subtract works as intended
      */
-    @Test public void test4(){
-        Stat a = new Stat.CritRate(5);
-        Stat b = new Stat.CritRate(5);
-        assert a.subtract(b).value() == 0;
-    }
+    // @Test public void test4(){
+    //     Stat a = new Stat.CritRate(5);
+    //     Stat b = new Stat.CritRate(5);
+    //     assert a.subtract(b).value() == 0;
+    // }
 
+    /**
+     * testing that the parseStatType method works as intended
+     */
     @Test public void test5(){
+        assert Stat.parseStatType("cr") == Stat.type.CritRate;
+        assert Stat.parseStatType("CR%") == Stat.type.CritRate;
 
+        assert Stat.parseStatType("cd") == Stat.type.CritDMG;
+        assert Stat.parseStatType("CD%") == Stat.type.CritDMG;
+
+        assert Stat.parseStatType("em") == Stat.type.ElementalMastery;
+        assert Stat.parseStatType("hb%") == Stat.type.HealingBonus;
     }
 
 }

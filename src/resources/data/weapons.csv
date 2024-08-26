@@ -1,1 +1,156 @@
-
+Weapon, baseATK, stat, statvalue
+Ibis Piercer, 565, ATK%, 27.6%
+Jadefall's Splendor, 608, HP%, 49.6%
+Beacon of the Reed Sea, 608, CR%, 33.1%
+Mailed Flower, 565, EM, 110
+Light of Foliar Incision, 542, CD%, 88.2%
+Toukabou Shigure, 510, EM, 165
+Tulaytullah's Remembrance, 674, CD%, 44.1%
+A Thousand Floating Dreams, 542, EM, 265
+Key of Khaj-Nisut, 542, HP%, 66.2%
+Staff of the Scarlet Sands, 542, CR%, 44.1%
+Missive Windspear, 510, ATK%, 41.3%
+Wandering Evenstar, 510, EM, 165
+Makhaira Aquamarine, 510, EM, 165
+Xiphos' Moonlight, 510, EM, 165
+Hunter's Path, 542, CR%, 44.1%
+Sapwood Blade, 565, ER%, 30.6%
+Moonpiercer, 565, EM, 110
+King's Squire, 454, ATK%, 55.1%
+Fruit of Fulfillment, 510, ER%, 45.9%
+Forest Regalia, 565, ER%, 30.6%
+End of the Line, 510, ER%, 45.9%
+Kagotsurube Isshin, 510, ATK%, 41.3%
+Aqua Simulacra, 542, CD%, 88.2%
+Fading Twilight, 565, ER%, 30.6%
+Haran Geppaku Futsu, 608, CR%, 33.1%
+Kagura's Verity, 608, CD%, 66.2%
+Oathsworn Eye, 565, ATK%, 27.6%
+Calamity Queller, 741, ATK%, 16.5%
+Redhorn Stonethresher, 542, CD%, 88.2%
+Cinnabar Spindle, 454, DEF%, 69.0%
+Polar Star, 608, CR%, 33.1%
+Wavebreaker's Fin, 620, ATK%, 13.8%
+Mouun's Moon, 565, ATK%, 27.6%
+Akuoumaru, 510, ATK%, 41.3%
+Everlasting Moonglow, 608, HP%, 49.6%
+Engulfing Lightning, 608, ER%, 55.1%
+Predator, 510, ATK%, 41.3%
+Luxurious Sea-Lord, 454, ATK%, 55.1%
+"The Catch", 510, ER%, 45.9%
+Mistsplitter Reforged, 674, CD%, 44.1%
+Thundering Pulse, 608, CD%, 66.2%
+Hakushin Ring, 565, ER%, 30.6%
+Katsuragikiri Nagamasa, 510, ER%, 45.9%
+Kitain Cross Spear, 565, EM, 110
+Amenoma Kageuchi, 454, ATK%, 55.1%
+Hamayumi, 454, ATK%, 55.1%
+Freedom-Sworn, 608, EM, 198
+Mitternachts Waltz, 510, Physical DMG%, 51.7%
+Dodoco Tales, 454, ATK%, 55.1%
+Song of Broken Pines, 741, Physical DMG%, 20.7%
+Elegy for the End, 608, ER%, 55.1%
+Wine and Song, 565, ER%, 30.6%
+Windblume Ode, 510, EM, 165
+The Alley Flash, 620, EM, 55
+Alley Hunter, 565, ATK%, 27.6%
+Lithic Spear, 565, ATK%, 27.6%
+Lithic Blade, 510, ATK%, 41.3%
+Summit Shaper, 608, ATK%, 49.6%
+Staff of Homa, 608, CD%, 66.2%
+Primordial Jade Cutter, 542, CR%, 44.1%
+Snow-Tombed Starsilver, 565, Physical DMG%, 34.5%
+Frostbearer, 510, ATK%, 41.3%
+Festering Desire, 510, ER%, 45.9%
+Dragonspine Spear, 454, Physical DMG%, 69.0%
+Vortex Vanquisher, 608, ATK%, 49.6%
+The Unforged, 608, ATK%, 49.6%
+Memory of Dust, 608, ATK%, 49.6%
+Royal Spear, 565, ATK%, 27.6%
+Wolf's Gravestone, 608, ATK%, 49.6%
+Skyward Spine, 674, ER%, 36.8%
+Skyward Pride, 674, ER%, 36.8%
+Skyward Harp, 674, CR%, 22.1%
+Skyward Blade, 608, ER%, 55.1%
+Skyward Atlas, 674, ATK%, 33.1%
+Primordial Jade Winged-Spear, 674, CR%, 22.1%
+Lost Prayer to the Sacred Winds, 608, CR%, 33.1%
+Aquila Favonia, 674, Physical DMG%, 41.3%
+Amos' Bow, 608, ATK%, 49.6%
+Whiteblind, 510, DEF%, 51.7%
+The Widsith, 510, CD%, 55.1%
+The Viridescent Hunt, 510, CR%, 27.6%
+The Stringless, 510, EM, 165
+The Flute, 510, ATK%, 41.3%
+The Black Sword, 510, CR%, 27.6%
+The Bell, 510, HP%, 41.3%
+Sword of Descension, 440, ATK%, 35.2%
+Solar Pearl, 510, CR%, 27.6%
+Serpent Spine, 510, CR%, 27.6%
+Sacrificial Sword, 454, ER%, 61.3%
+Sacrificial Greatsword, 565, ER%, 30.6%
+Sacrificial Fragments, 454, EM, 221
+Sacrificial Bow, 565, ER%, 30.6%
+Rust, 510, ATK%, 41.3%
+Royal Longsword, 510, ATK%, 27.6%
+Royal Grimoire, 565, ATK%, 27.6%
+Royal Greatsword, 565, ATK%, 27.6%
+Royal Bow, 510, ATK%, 41.3%
+Rainslasher, 510, EM, 165
+Prototype Starglitter, 510, ER%, 45.9%
+Prototype Rancour, 565, Physical DMG%, 34.5%
+Prototype Crescent, 510, ATK%, 41.3%
+Prototype Archaic, 565, ATK%, 27.6%
+Prototype Amber, 510, HP%, 41.3%
+Mappa Mare, 565, EM, 110
+Lion's Roar, 510, ATK%, 41.3%
+Iron Sting, 510, EM, 165
+Favonius Warbow, 454, ER%, 61.3%
+Favonius Sword, 454, ER%, 61.3%
+Favonius Lance, 565, ER%, 30.6%
+Favonius Greatsword, 454, ER%, 61.3%
+Favonius Codex, 510, ER%, 45.9%
+Eye of Perception, 454, ATK%, 55.1%
+Dragon's Bane, 454, EM, 221
+Deathmatch, 454, CR%, 36.8%
+Crescent Pike, 565, Physical DMG%, 34.5%
+Compound Bow, 454, Physical DMG%, 69.0%
+Blackcliff Warbow , 565, CD%, 36.8%
+Blackcliff Slasher, 510, CD%, 55.1%
+Blackcliff Pole, 510, CD%, 55.1%
+Blackcliff Longsword, 565, CD%, 36.8%
+Blackcliff Agate, 510, CD%, 55.1%
+White Tassel, 401, CR%, 23.4%
+White Iron Greatsword, 401, DEF%, 43.9%
+Twin Nephrite, 448, CR%, 15.6%
+Traveler's Handy Sword, 448, DEF%, 27.5%
+Thrilling Tales of Dragon Slayers, 401, HP%, 35.2%
+Slingshot, 354, CR%, 31.2%
+Skyrider Sword, 354, ER%, 51.7%
+Skyrider Greatsword, 401, Physical DMG%, 43.9%
+Sharpshooter's Oath, 401, CD%, 46.9%
+Recurve Bow, 354, HP%, 46.9%
+Raven Bow, 448, EM, 94
+Otherworldly Story, 401, ER%, 39.0%
+Messenger, 448, CD%, 31.2%
+Magic Guide, 354, EM, 187
+Harbinger of Dawn, 401, CD%, 46.9%
+Halberd, 448, ATK , 23.4%
+Fillet Blade, 401, ATK%, 35.2%
+Ferrous Shadow, 401, HP%, 35.2%
+Emerald Orb, 448, EM, 94
+Debate Club, 401, ATK%, 35.2%
+Dark Iron Sword, 401, EM, 141
+Cool Steel, 401, ATK%, 35.2%
+Bloodtainted Greatsword, 354, EM, 187
+Black Tassel, 354, HP%, 46.9%
+Silver Sword, 243, n, n
+Seasoned Hunter's Bow, 243, n, n
+Pocket Grimoire, 243, n, n
+Old Merc's Pal, 243, n, n
+Iron Point, 243, n, n
+Waster Greatsword, 185, n, n
+Hunter's Bow, 185, n, n
+Dull Blade, 185, n, n
+Beginner's Protector, 185, n, n
+Apprentice's Notes, 185, n, n
