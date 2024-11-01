@@ -5,9 +5,9 @@
 
 ## Installation
  1. **Clone The Repository**
-    ```bash
-    git clone https://github.com/ulambda/GDCalc.git 
-    ```
+   ```bash
+   git clone https://github.com/ulambda/GDCalc.git 
+   ```
  2. **Navagate into the directory**
   ```bash
   cd GDCalc
