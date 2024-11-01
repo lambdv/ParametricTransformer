@@ -1,1 +1,13 @@
-com\github\ulambda\App.class
+com\github\ulambda\core\Optimizer.class
+com\github\ulambda\core\Weapon.class
+com\github\ulambda\core\Artifact$SubStats.class
+com\github\ulambda\core\Artifact$type.class
+com\github\ulambda\core\Characters.class
+com\github\ulambda\core\Rotation.class
+com\github\ulambda\core\Stat.class
+com\github\ulambda\core\StatAdaptor.class
+com\github\ulambda\core\Equippable.class
+com\github\ulambda\core\Character.class
+com\github\ulambda\core\StatTable.class
+com\github\ulambda\core\Weapons.class
+com\github\ulambda\core\Artifact.class
