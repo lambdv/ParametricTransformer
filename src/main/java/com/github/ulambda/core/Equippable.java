@@ -1,9 +1,8 @@
 package com.github.ulambda.core;
 import java.util.Map;
 
-public interface Equippable{
-    Map<Stat, Double> stats();
-    default double getStat(Stat type){
-        return stats().getOrDefault(type, 0.0);
+public interface Equippable extends StatTable{
+    @Override public default double addStat(Stat type, double amount){
+        throw new UnsupportedOperationException("Cannot add stats to an Equippable object");
     }
 }

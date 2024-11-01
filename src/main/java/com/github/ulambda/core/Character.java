@@ -11,7 +11,7 @@ import com.github.ulambda.core.Weapon;
 /**
  * Instance representation of a character's total stats.
  */
-public class Character {
+public class Character implements StatTable{
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
     private Optional<Weapon> weapon = Optional.empty();
@@ -48,4 +48,15 @@ public class Character {
             + goblet.map(g -> g.getStat(type)).orElse(0.0)
             + circlet.map(c -> c.getStat(type)).orElse(0.0);
     }
+
+    public Map<Stat, Double> stats(){
+        return Arrays.stream(Stat.values())
+            .collect(
+                HashMap::new, 
+                (map, stat) -> map.put(stat, getStat(stat)), 
+                HashMap::putAll
+            );
+    }
+
+
 }
