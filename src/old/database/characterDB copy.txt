@@ -1,3 +1,4 @@
+Character, baseHP, baseATK, baseDEF, stat1, stat1value, stat2, stat2value, stat3, stat3value, stat4, stat4value
 Amber, 9461, 223, 601, ATK%, 0.24
 Kaeya, baseHP, baseATK, baseDEF, ER%, statvalue
 Lisa, baseHP, baseATK, baseDEF, EM, statvalue
