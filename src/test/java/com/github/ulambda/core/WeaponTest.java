@@ -17,6 +17,7 @@ public class WeaponTest {
         var w1 = Weapons.of("Ibis Piercer");
         var w2 = Weapons.of("Ibis Piercer");
         assertTrue(w1 == w2);
+        assertTrue(w1.toString().equals(w2.toString()));
         var w3 = Weapons.of("Mistsplitter Reforged");
         assertTrue(w1 != w3);
     }
