@@ -1,7 +1,13 @@
 package com.github.ulambda.core;
 import java.util.Map;
 
-public class Artifact implements Equippable{
+/**
+ * Artifact object represents an artifact in the game.
+ * @note Artifacts are equippable to a character.
+ * @note Artifacts are mutable stat tables that are built up and compiled into an immutable instance.
+ * @note Artifacts are often built by using optimizers to maximize the character's rotation damage output.
+ */
+public class Artifact implements Equippable, MutableStatTable{
     public static enum type { FLOWER, FEATHER, SANDS, GOBLET, CIRCLET };
     String set;
     Artifact.type type;

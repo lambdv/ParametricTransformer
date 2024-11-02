@@ -3,7 +3,7 @@ package com.github.ulambda.core;
 import java.util.Map;
 
 /**
- * Weapon class represents a weapon in the game.
+ * Weapon object represents a weapon in the game.
  */
 public record Weapon(
     String name, 
@@ -13,7 +13,7 @@ public record Weapon(
     double baseATK, 
     Stat mainStatType, 
     double mainStatAmount
-) implements Equippable {
+) implements Equippable, ImmutableStatTable {
     public Map<Stat, Double> stats(){
         return Map.of(
             Stat.BaseATK, baseATK,

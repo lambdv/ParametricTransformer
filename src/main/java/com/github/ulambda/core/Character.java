@@ -9,9 +9,12 @@ import com.github.ulambda.core.Stat;
 import com.github.ulambda.core.Weapon;
 
 /**
- * Instance representation of a character's total stats.
+ * Representation for an in-game Character's stat table.
+ * @note Character objects are a generalization of a builder pattern where the stat table is built up and compiled into an immutable instance.
+ * @note Character's base stats are immutable and are set at construction time.
+ * @note Character's stats are built by adding fluid stats and equipping artifacts and weapons.
  */
-public class Character implements StatTable{
+public class Character implements MutableStatTable{
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
     private Optional<Weapon> weapon = Optional.empty();

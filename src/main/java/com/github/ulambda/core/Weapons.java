@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Utility class for getting Weapon objects from a database
+ * Utility class that provides a factory method for getting weapons from a database.
  */
 public final class Weapons {
     private static final Map<String, Weapon> cache = new HashMap<>(); //cache for weapons
