@@ -19,9 +19,12 @@ public final class Weapons {
      */
     public static Weapon of(String name) {
         name = flattenName(name);
+
         if(cache.containsKey(name))
             return cache.get(name);
+
         Optional<Weapon> weapon = Optional.empty();
+
         try (Scanner scanner = new Scanner(databasePath)){
             scanner.nextLine(); //slip schema header
             //Optional<Weapon> partialMatch = Optional.empty();
@@ -36,9 +39,9 @@ public final class Weapons {
             }
             scanner.close();
         }
-        catch (Exception e){ throw new RuntimeException("Error reading database"); }
-        if(weapon.isEmpty()){ throw new RuntimeException("Weapon not found in database"); }
-        return weapon.get();
+        
+        catch (Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
+        return weapon.orElseThrow(()-> new RuntimeException("Weapon not found in database"));
     }
 
     public static Weapon[] of(String name, String... names){

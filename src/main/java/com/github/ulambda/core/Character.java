@@ -15,6 +15,8 @@ import com.github.ulambda.core.Weapon;
  * @note Character's stats are built by adding fluid stats and equipping artifacts and weapons.
  */
 public class Character implements MutableStatTable{
+    String name;
+    Stat ascensionStatType;
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
     private Optional<Weapon> weapon = Optional.empty();
@@ -24,7 +26,9 @@ public class Character implements MutableStatTable{
     private Optional<Artifact> goblet = Optional.empty();
     private Optional<Artifact> circlet = Optional.empty();
  
-    public Character(double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
+    public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
+        this.name = name;
+        this.ascensionStatType = ascensionStatType;
         baseStats = new HashMap<>(Map.of(
             Stat.BaseHP, baseHP,
             Stat.BaseATK, baseATK,
@@ -61,5 +65,16 @@ public class Character implements MutableStatTable{
             );
     }
 
+    @Override public String toString(){
+        return name
+            + "\nBase Stats: " + baseStats
+            + "\nFluid Stats: " + fluidStats
+            + "\nWeapon: " + weapon
+            + "\nFlower: " + flower
+            + "\nFeather: " + feather
+            + "\nSands: " + sands
+            + "\nGoblet: " + goblet
+            + "\nCirclet: " + circlet;
+    }
 
 }
