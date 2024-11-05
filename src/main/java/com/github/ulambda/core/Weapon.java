@@ -13,7 +13,7 @@ public record Weapon(
     double baseATK, 
     Stat mainStatType, 
     double mainStatAmount
-) implements Equippable, ImmutableStatTable {
+) implements Equippable {
     public Map<Stat, Double> stats(){
         return Map.of(
             Stat.BaseATK, baseATK,

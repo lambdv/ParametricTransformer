@@ -1,6 +1,12 @@
 *.class
 .vscode/
+.vscode
+/.vscode
 .gitignore
 .gitatributes
 /bin/
-toadd.md
+/target/
+/.classpath
+/.project
+/.settings/
+target/

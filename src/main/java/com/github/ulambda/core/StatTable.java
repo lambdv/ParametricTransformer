@@ -9,7 +9,6 @@ public interface StatTable{
         return stats().getOrDefault(type, 0.0);
     }
 }
-
 /**
  * StatTables where values can be modified after creation.
  */
@@ -21,11 +20,6 @@ interface MutableStatTable extends StatTable{
         return stats().put(type, amount);
     }
 }
-
-/**
- * StatTables where values cannot be modified after creation.
- */
-interface ImmutableStatTable extends StatTable{}
 
 /**
  * StatTables that can be equipped to a character.
