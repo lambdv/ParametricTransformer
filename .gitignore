@@ -6,7 +6,7 @@
 .gitatributes
 /bin/
 /target/
-/.classpath
+*.classpath
 /.project
 /.settings/
 target/
