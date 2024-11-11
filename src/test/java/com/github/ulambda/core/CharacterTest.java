@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import com.github.ulambda.core.Character;
+import com.github.ulambda.core.Characters;
+import com.github.ulambda.core.*;
 
 public class CharacterTest {
     @Test public void CreateCharacterWithConstructor(){

@@ -1,6 +1,7 @@
 package com.github.ulambda.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,17 +13,18 @@ public class AssetManager {
         return Paths.get("").toAbsolutePath().resolve("src/resources/");
     }
 
-    public final static File getFileResource(String fileName){
+    public final static File getFileResource(String fileName) throws FileNotFoundException{
         return resourcePath().resolve(fileName).toFile();
     }
     
-    public final static JSONObject getJSONResource(String fileName){
+    public final static JSONObject getJSONResource(String fileName) throws FileNotFoundException{
         try{
             File resource = AssetManager.getFileResource(fileName);
             var bytes = Files.readAllBytes(resource.toPath());
             String content = new String(bytes);
             return new JSONObject(content);
         }
+        catch(FileNotFoundException e){ throw e; }
         catch(Throwable t){ throw new RuntimeException(t); }
     }
 }

@@ -8,12 +8,11 @@ public class StatTest {
      * Stat.parseStat() can convert string to Stat enum as intended
      */
     @Test public void parseStatConvertingStringToEnum(){
-        assert Stat.parseStat("cr") == Stat.CritRate;
-        assert Stat.parseStat("CR%") == Stat.CritRate;
-        assert Stat.parseStat("cd") == Stat.CritDMG;
-        assert Stat.parseStat("CD%") == Stat.CritDMG;
-        assert Stat.parseStat("em") == Stat.ElementalMastery;
-        assert Stat.parseStat("hb%") == Stat.HealingBonus;
+        assertTrue(Stat.parseStat("cr") == Stat.CritRate);
+        assertTrue(Stat.parseStat("CR%") == Stat.CritRate);
+        assertTrue(Stat.parseStat("cd") == Stat.CritDMG);
+        assertTrue(Stat.parseStat("CD%") == Stat.CritDMG);
+        assertTrue(Stat.parseStat("em") == Stat.ElementalMastery);
+        assertTrue(Stat.parseStat("hb%") == Stat.HealingBonus);
     }
-    
 }

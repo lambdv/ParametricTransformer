@@ -1,9 +1,15 @@
 package com.github.ulambda.core;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import com.github.ulambda.utils.StandardUtils;
 
 /**
  * Stat enum represents types for stats
+ * @Note all texture references to stats should reflect the enum type
+ * @Note uses pastal case 
  */
 public enum Stat {
     BaseHP, 
@@ -43,7 +49,7 @@ public enum Stat {
 };
 
 class StatAdaptor{
-    private static Map<String, Stat> dictionary = Map.of(
+    public static Map<String, Stat> dictionary = new HashMap<>(Map.of(
         "cr", Stat.CritRate,
         "cd", Stat.CritDMG,
         "em", Stat.ElementalMastery,
@@ -52,25 +58,18 @@ class StatAdaptor{
         "atk", Stat.ATKPercent,
         "def", Stat.DEFPercent,
         "hb", Stat.HealingBonus,
-        "n", Stat.None
-    );
+        "n", Stat.None,
+        "elementaldmg", Stat.ElementalDMGBonus
+    ));
 
-    private static Map<String, Stat> symbols = new HashMap<>();
-    {
-        for(Stat stat : Stat.values())
-            symbols.put(stat.toString().toLowerCase().replaceAll("\\s", "").replaceAll("%", ""), stat);
-    }
+    {Arrays.stream(Stat.values())
+        .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
+    );}
 
     public static Stat parseStat(String typeName){
-        typeName = typeName.toLowerCase()
-            .replaceAll("\\s", "")
-            .replaceAll("%", "");
-        if(dictionary.containsKey(typeName))
-            return dictionary.get(typeName);
-
-        if(symbols.containsKey(typeName))
-            return symbols.get(typeName);
-
-        throw new IllegalArgumentException("Invalid stat type");
+        return Optional.ofNullable(dictionary.get(
+            StandardUtils.flattenName(typeName)
+        ))
+        .orElseThrow(()->new IllegalArgumentException("Invalid stat type"));
     }
 }

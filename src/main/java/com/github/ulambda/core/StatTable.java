@@ -1,5 +1,7 @@
 package com.github.ulambda.core;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 /**
  * Top level type for data structures that stores stat-amount pairs.
  */
@@ -25,3 +27,11 @@ interface MutableStatTable extends StatTable{
  * StatTables that can be equipped to a character.
  */
 interface Equippable extends StatTable{}
+
+class StatTables{
+    public static Map<Stat, Double> merge(Stream<Map<Stat, Double>> statTableMaps){
+        return statTableMaps
+            .<Map.Entry<Stat, Double>>mapMulti((map, c)->map.forEach((k, v)->c.accept(Map.entry(k, v))))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum));
+    }
+}
