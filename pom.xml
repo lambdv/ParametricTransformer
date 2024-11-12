@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.ulambda</groupId>
-  <artifactId>gdcalc</artifactId>
+  <artifactId>parametrictransformer</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>gdcalc</name>
+  <name>Parametric Transformer</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
