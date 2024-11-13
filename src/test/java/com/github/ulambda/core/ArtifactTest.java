@@ -11,7 +11,7 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.nio.file.Files;
-
+import java.util.Map;
 
 import org.junit.Test;
 import com.github.ulambda.core.Character;
@@ -69,7 +69,33 @@ public class ArtifactTest {
         assertEquals(6.48, Artifacts.getSubStatValue(5, Stat.EnergyRecharge), 0.01);
         assertEquals(3.89, Artifacts.getSubStatValue(5, Stat.CritRate), 0.01);
         assertEquals(7.77, Artifacts.getSubStatValue(5, Stat.CritDMG), 0.01);
+
+        // var flower = new Artifact(Artifact.ArtifactType.FLOWER, 20, 5, Stat.FlatHP, new ArtifactSetBonus(Map.of(), Map.of()));
+        // var feather = new Artifact(Artifact.ArtifactType.FEATHER, 20, 5, Stat.FlatATK, new ArtifactSetBonus(Map.of(), Map.of()));
+        // var sands = new Artifact(Artifact.ArtifactType.SANDS, 20, 5, Stat.HPPercent, new ArtifactSetBonus(Map.of(), Map.of()));
+        // var goblet = new Artifact(Artifact.ArtifactType.GOBLET, 20, 5, Stat.ATKPercent, new ArtifactSetBonus(Map.of(), Map.of()));
+        // var circlet = new Artifact(Artifact.ArtifactType.CIRCLET, 20, 5, Stat.CritRate, new ArtifactSetBonus(Map.of(), Map.of()));
+
+        // assertEquals(4780, flower.getStat(Stat.FlatHP), 0.01);
+        // assertEquals(717, feather.getStat(Stat.FlatATK), 0.01);
+        // assertEquals(62.2, sands.getStat(Stat.HPPercent), 0.01);
+        // assertEquals(4780, flower.getStat(Stat.FlatHP), 0.01);
+        // assertEquals(717, feather.getStat(Stat.FlatATK), 0.01);
+        
     }
+
+    @Test public void SubstatFunctionality(){
+        Artifact flower = new Artifact(Artifact.ArtifactType.FLOWER, 20, 5, Stat.FlatHP, new ArtifactSetBonus(Map.of(), Map.of()));
+        SubStats flowerSUbs = new SubStats(flower, 
+            Stat.FlatATK, RollQuality.AVG,  
+            Stat.FlatDEF,  RollQuality.AVG,
+            Stat.HPPercent, RollQuality.AVG,
+            Stat.ATKPercent, RollQuality.AVG
+        );
+        flower.set(flowerSUbs);
+        
+    }
+
 
     
 }

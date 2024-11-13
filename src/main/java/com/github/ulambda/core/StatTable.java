@@ -21,6 +21,9 @@ interface MutableStatTable extends StatTable{
     public default double setStat(Stat type, double amount){
         return stats().put(type, amount);
     }
+    public default StatTable build(){
+        return () -> stats();
+    }
 }
 
 /**
@@ -29,8 +32,9 @@ interface MutableStatTable extends StatTable{
 interface Equippable extends StatTable{}
 
 class StatTables{
-    public static Map<Stat, Double> merge(Stream<Map<Stat, Double>> statTableMaps){
-        return statTableMaps
+    private StatTables(){}
+    public static StatTable merge(Stream<Map<Stat, Double>> statTableMaps){
+        return () -> statTableMaps
             .<Map.Entry<Stat, Double>>mapMulti((map, c)->map.forEach((k, v)->c.accept(Map.entry(k, v))))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum));
     }

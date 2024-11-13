@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public final class Weapons {
     private static final Map<String, Weapon> cache = new HashMap<>(); //cache for weapons
     private static final Path databasePath = Paths.get("").toAbsolutePath().resolve("src/resources/data/weapons.csv");
-
+    private Weapons(){}
     /**
      * Factory method for getting a weapon from the database
      * @param name
