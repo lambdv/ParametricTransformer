@@ -1,8 +1,9 @@
 package com.github.ulambda.core;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
 
 //json
 import org.json.JSONObject;
@@ -13,7 +14,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Map;
 
-import org.junit.Test;
 import com.github.ulambda.core.Character;
 import com.github.ulambda.utils.AssetManager;
 
