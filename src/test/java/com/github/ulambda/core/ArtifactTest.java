@@ -87,10 +87,10 @@ public class ArtifactTest {
     @Test public void SubstatFunctionality(){
         Artifact flower = new Artifact(Artifact.ArtifactType.FLOWER, 20, 5, Stat.FlatHP, new ArtifactSetBonus(Map.of(), Map.of()));
         SubStats flowerSUbs = new SubStats(flower, 
-            Stat.FlatATK, RollQuality.AVG,  
-            Stat.FlatDEF,  RollQuality.AVG,
-            Stat.HPPercent, RollQuality.AVG,
-            Stat.ATKPercent, RollQuality.AVG
+            Stat.FlatATK, RollQuality.AVG.multiplier,  
+            Stat.FlatDEF,  RollQuality.AVG.multiplier,
+            Stat.HPPercent, RollQuality.AVG.multiplier,
+            Stat.ATKPercent, RollQuality.AVG.multiplier
         );
         flower.set(flowerSUbs);
         

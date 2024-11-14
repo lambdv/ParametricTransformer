@@ -22,7 +22,6 @@ public class Artifact implements Equippable, MutableStatTable{
     int rarity;
     int level;
     Stat mainStatType;
-    //double mainStatAmount;
     SubStats substats;
 
 
@@ -35,14 +34,10 @@ public class Artifact implements Equippable, MutableStatTable{
         this.mainStatType = mainStatType;
         this.set = set;
         substats = new SubStats(this, 
-            Stat.None,
-            RollQuality.AVG, 
-            Stat.None, 
-            RollQuality.AVG, 
-            Stat.None, 
-            RollQuality.AVG, 
-            Stat.None, 
-            RollQuality.AVG);
+            Stat.None, 0, 
+            Stat.None, 0, 
+            Stat.None, 0, 
+            Stat.None, 0);
     }
 
     public void set(SubStats substats){
@@ -121,45 +116,7 @@ class Circlet extends Artifact{
 }
 
 
-/**
- * way to get main stat values for a given rarity and type
- */
-class Artifacts{
-    private static final JSONObject mainStatValues;
-    private static final JSONObject subStatValues;
-    static {
-        try{
-            mainStatValues = AssetManager.getJSONResource("artifactMainStats.json");
-            subStatValues = AssetManager.getJSONResource("artifactSubStats.json");
-        }
-        catch(Throwable t){throw new RuntimeException(t);}
-    }
-    public static double getMainStatValue(int rarity, int level, Stat type){
-        if(mainStatValues.equals(null)) throw new RuntimeException("mainStatValues is null");
-        if (type.equals(Stat.None)) return 0;
-        if(!Artifacts.levelCheck(level, rarity)) throw new IllegalArgumentException("Invalid level for rarity");
-        if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
-        return mainStatValues.getJSONObject(rarity+"star").getJSONArray(type.toString()).getDouble(level);
-    }
-    public static double getSubStatValue(int rarity, Stat type){
-        if(subStatValues.equals(null)) throw new RuntimeException("subStatValues is null");
-        if (type.equals(Stat.None)) return 0;
-        if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
-        return subStatValues.getJSONObject(rarity+"star").getDouble(type.toString());
-    }
 
-    public static boolean levelCheck(int level, int rarity){
-        if (level < 0) return false;
-        return switch (rarity){
-            case 1 -> level <= 4;
-            case 2 -> level <= 4;
-            case 3 -> level <= 12;
-            case 4 -> level <= 16;
-            case 5 -> level <= 20;
-            default -> false;
-        };
-    }
-}
 
 enum RollQuality { 
     MAX(1),
@@ -175,15 +132,18 @@ enum RollQuality {
 class SubStats implements StatTable{
     final Artifact parent;
     int rarity;
-    int numRolls;
     Stat subStat1Type = Stat.None;
     double subStat1Amount = 0;
+    int subStat1Rolls = 0;
     Stat subStat2Type = Stat.None;
     double subStat2Amount = 0;
+    int subStat2Rolls = 0;
     Stat subStat3Type = Stat.None;
     double subStat3Amount = 0;
+    int subStat3Rolls = 0;
     Stat subStat4Type = Stat.None;
     double subStat4Amount = 0;
+    int subStat4Rolls = 0;
     
 
     public Map<Stat, Double> stats(){
@@ -195,102 +155,132 @@ class SubStats implements StatTable{
         );
     }
 
-    /**
-     * 
-        Rarity	Max LV	Base # of
-        Sub Stats	# of Unlocks	# of Upgrades
-        1 Star	+4	0	1	0
-        2 Stars	+4	0-1	1	0
-        3 Stars	+12	1-2	2-3	0-1
-        4 Stars	+16	2-3	1-2	2-3
-        5 Stars	+20	3-4	0-1	4-5
-     */
 
+    public SubStats(Artifact parent, 
+        Stat subStat1Type, double subStat1RollQuality, 
+        Stat subStat2Type, double subStat2RollQuality, 
+        Stat subStat3Type, double subStat3RollQuality, 
+        Stat subStat4Type, double subStat4RollQuality){
 
-    public SubStats(Artifact parent, Stat subStat1Type, RollQuality subStat1RollQuality, Stat subStat2Type, RollQuality subStat2RollQuality, Stat subStat3Type, RollQuality subStat3RollQuality, Stat subStat4Type, RollQuality subStat4RollQuality){
         this.parent = parent;
         this.rarity = parent.rarity;
-        numRolls = 0;
 
         assert subStat1Type != parent.mainStatType;
-        assert subStat2Type != parent.mainStatType;
-        assert subStat3Type != parent.mainStatType;
-        assert subStat4Type != parent.mainStatType;
+        assert subStat1Type != subStat2Type || subStat2Type.equals(Stat.None);
+        assert subStat1Type != subStat3Type || subStat2Type.equals(Stat.None);
+        assert subStat1Type != subStat4Type || subStat2Type.equals(Stat.None);
+        assert subStat2Type != subStat3Type || subStat2Type.equals(Stat.None);
+        assert subStat2Type != subStat4Type || subStat2Type.equals(Stat.None);
+        assert subStat3Type != subStat4Type || subStat2Type.equals(Stat.None);
+
 
         this.subStat1Type = subStat1Type;
         this.subStat2Type = subStat2Type;
         this.subStat3Type = subStat3Type;
         this.subStat4Type = subStat4Type;
-        subStat1Amount = Artifacts.getSubStatValue(rarity, subStat1Type) * subStat1RollQuality.multiplier;
-        subStat2Amount = Artifacts.getSubStatValue(rarity, subStat2Type) * subStat2RollQuality.multiplier;
-        subStat3Amount = Artifacts.getSubStatValue(rarity, subStat3Type) * subStat3RollQuality.multiplier;
-        subStat4Amount = Artifacts.getSubStatValue(rarity, subStat4Type) * subStat4RollQuality.multiplier;
+        subStat1Amount = Artifacts.getSubStatValue(rarity, subStat1Type) * subStat1RollQuality;
+        subStat2Amount = Artifacts.getSubStatValue(rarity, subStat2Type) * subStat2RollQuality;
+        subStat3Amount = Artifacts.getSubStatValue(rarity, subStat3Type) * subStat3RollQuality;
+        subStat4Amount = Artifacts.getSubStatValue(rarity, subStat4Type) * subStat4RollQuality;
     }
 
     public static SubStats of(Artifact parent){
         assert parent.rarity == 1 || parent.rarity == 2;
-        return new SubStats(parent, Stat.FlatHP, RollQuality.AVG, Stat.FlatATK, RollQuality.AVG, Stat.FlatDEF, RollQuality.AVG, Stat.None, RollQuality.AVG);
+        return new SubStats(
+            parent, 
+            Stat.None, 0, 
+            Stat.None, 0, 
+            Stat.None, 0, 
+            Stat.None, 0
+        );
     }
 
 
-    public static SubStats of(Artifact parent, Stat stat, RollQuality quality){
+    public static SubStats of(Artifact parent, Stat stat, int quality){
         assert parent.rarity == 2 || parent.rarity == 3;
-        return null;
+        return new SubStats(
+            parent, 
+            stat, quality, 
+            Stat.None, 0, 
+            Stat.None, 0, 
+            Stat.None, 0
+        );
     }
 
-    public static SubStats of(Artifact parent, Stat stat, RollQuality quality, Stat stat2, RollQuality quality2){
+    public static SubStats of(Artifact parent, Stat stat, int quality, Stat stat2, int quality2){
         assert parent.rarity == 3 || parent.rarity == 4;
-        return null;
+        return new SubStats(
+            parent, 
+            stat, quality, 
+            stat2, quality2, 
+            Stat.None, 0,
+            Stat.None, 0
+        );
     }
 
-    public static SubStats of(Artifact parent, Stat stat, RollQuality quality, Stat stat2, RollQuality quality2, Stat stat3, RollQuality quality3){
+    public static SubStats of(Artifact parent, Stat stat, int quality, Stat stat2, int quality2, Stat stat3, int quality3){
         assert parent.rarity == 4 || parent.rarity == 5;
-        return null;
+        return new SubStats(
+            parent, 
+            stat, quality, 
+            stat2, quality2, 
+            stat3, quality3, 
+            Stat.None, 0
+        );  
     }
 
-    public static SubStats of(Artifact parent, Stat stat, RollQuality quality, Stat stat2, RollQuality quality2, Stat stat3, RollQuality quality3, Stat stat4, RollQuality quality4){
+    public static SubStats of(Artifact parent, Stat stat, int quality, Stat stat2, int quality2, Stat stat3, int quality3, Stat stat4, int quality4){
         assert parent.rarity == 5;
-        return null;
+        return new SubStats(
+            parent, 
+            stat, quality, 
+            stat2, quality2, 
+            stat3, quality3, 
+            stat4, quality4
+        ); 
     }
 
-
-
+    public int numRolls(){
+        return subStat1Rolls + subStat2Rolls + subStat3Rolls + subStat4Rolls;
+    }
 
     public void rollSubStat(Stat stat, RollQuality quality){
         if(stat.equals(Stat.None)) throw new IllegalArgumentException("Stat cannot be None");
-        if(numRolls < 10) throw new IllegalArgumentException("Too many rolls");
-        double base = Artifacts.getSubStatValue(rarity, stat);
-        if(subStat1Type.equals(stat))
-            subStat1Amount += base * quality.multiplier;
-        else if(subStat2Type.equals(stat))
-            subStat2Amount += base * quality.multiplier;
-        else if(subStat3Type.equals(stat))
-            subStat3Amount += base * quality.multiplier;
-        else if(subStat4Type.equals(stat))
-            subStat4Amount += base * quality.multiplier;
-        else throw new IllegalArgumentException("Stat not in substats");
-        numRolls++;
-    }
+        if(numRolls() >= 10) throw new IllegalArgumentException("Too many rolls");
 
-    public void rollSubStat(int i, RollQuality quality){
-        assert i >= 1 && i <= 4;
-        assert numRolls < 10;
-        double base = Artifacts.getSubStatValue(rarity, switch(i){
-            case 1 -> subStat1Type;
-            case 2 -> subStat2Type;
-            case 3 -> subStat3Type;
-            case 4 -> subStat4Type;
-            default -> throw new IllegalArgumentException("Invalid substat index");
-        });
-        switch(i){
-            case 1 -> subStat1Amount += base * quality.multiplier;
-            case 2 -> subStat2Amount += base * quality.multiplier;
-            case 3 -> subStat3Amount += base * quality.multiplier;
-            case 4 -> subStat4Amount += base * quality.multiplier;
+        if(subStat1Type.equals(Stat.None)){
+            subStat1Type = stat;
         }
-        numRolls++;
-    }
+        else if(subStat2Type.equals(Stat.None)){
+            subStat2Type = stat;
+        }
+        else if(subStat3Type.equals(Stat.None)){
+            subStat3Type = stat;
+        }
+        else if(subStat4Type.equals(Stat.None)){
+            subStat4Type = stat;
+        }
 
+        double base = Artifacts.getSubStatValue(rarity, stat);
+        if(subStat1Type.equals(stat)){
+            subStat1Amount += base * quality.multiplier;
+            subStat1Rolls++;
+        }
+        else if(subStat2Type.equals(stat)){
+            subStat2Amount += base * quality.multiplier;
+            subStat2Rolls++;
+        }
+        else if(subStat3Type.equals(stat)){
+            subStat3Amount += base * quality.multiplier;
+            subStat3Rolls++;
+        }
+        else if(subStat4Type.equals(stat)){
+            subStat4Amount += base * quality.multiplier;
+            subStat4Rolls++;
+        }
+            
+        else throw new IllegalArgumentException("Stat not in substats");
+    }
 }
 
 

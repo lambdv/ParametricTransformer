@@ -25,8 +25,7 @@ public final class Characters {
         var flattenName = StandardUtils.flattenName(name); //normalize name
         if(cache.containsKey(flattenName)) //check for cached CharacterKey
             return cache.get(flattenName).parseCharacter();
-        try{
-            return Files.lines(databasePath) //read file from databasePath as a stream of lines
+        try{ return Files.lines(databasePath) //read file from databasePath as a stream of lines
                 .skip(1) //skip schema header
                 .map(line -> line.split(",")) //split each line by comma
                 .map(row -> CharacterKey.of(row)) //parse each row into a CharacterKey

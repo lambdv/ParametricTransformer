@@ -1,5 +1,6 @@
 package com.github.ulambda.core;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -14,17 +15,17 @@ public final class Weapons {
     private Weapons(){}
     /**
      * Factory method for getting a weapon from the database
+     * @note name is case-insensitive and special characters are ignored
+     * @note method reads the database and constructs a weapon object: this object is cached and any method call with the same name will return the same object
      * @param name
      * @return Weapon
+     * @throws RuntimeException exception is leaked if weapon is not found: program should crash
      */
     public static Weapon of(String name) {
         name = flattenName(name);
-
         if(cache.containsKey(name))
             return cache.get(name);
-
         Optional<Weapon> weapon = Optional.empty();
-
         try (Scanner scanner = new Scanner(databasePath)){
             scanner.nextLine(); //slip schema header
             //Optional<Weapon> partialMatch = Optional.empty();
@@ -44,8 +45,20 @@ public final class Weapons {
         return weapon.orElseThrow(()-> new RuntimeException("Weapon not found in database"));
     }
 
-    public static Weapon[] of(String name, String... names){
-        throw new UnsupportedOperationException("Not implemented"); //TODO
+    public static Weapon[] of(String... names){
+        List<String> nameList = Arrays.stream(names).map(Weapons::flattenName).toList();
+
+        try {   
+            return Files.lines(databasePath)
+                .skip(1)
+                .map(line -> line.split(", "))
+                .filter(line -> nameList.contains(flattenName(line[0])))
+                .sorted(Comparator.comparing(line -> nameList.indexOf(flattenName(line[0]))))
+                .map(Weapons::parseWeapon)
+                .toArray(Weapon[]::new);
+        }
+
+        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
     }
 
     private static Weapon parseWeapon(String[] data){
