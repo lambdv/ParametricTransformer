@@ -2,7 +2,7 @@ package com.github.ulambda.core;
 import org.json.JSONObject;
 import com.github.ulambda.utils.AssetManager;
 /**
- * way to get main stat values for a given rarity and type
+ * Utility class for getting artifact stat values
  */
 public class Artifacts{
     private static final JSONObject mainStatValues;
@@ -40,4 +40,16 @@ public class Artifacts{
             default -> false;
         };
     }
+
+
+    enum RollQuality { 
+        MAX(1),
+        HIGH(0.9),
+        MID(0.8),
+        LOW(0.7),
+        AVG((1+0.9+0.8+0.7)/4); //this is what KQMC uses
+        double multiplier;
+        RollQuality(double multiplier){ this.multiplier = multiplier; }
+    };
+    
 }

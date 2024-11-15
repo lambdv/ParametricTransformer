@@ -4,18 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
-
-//json
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Map;
-
 import com.github.ulambda.core.Character;
 import com.github.ulambda.utils.AssetManager;
+import com.github.ulambda.core.Artifacts;
 
 public class ArtifactTest {
     @Test public void LoadArtifactSubStatResourceAsJSON(){
@@ -84,17 +81,17 @@ public class ArtifactTest {
         
     }
 
-    @Test public void SubstatFunctionality(){
-        Artifact flower = new Artifact(Artifact.ArtifactType.FLOWER, 20, 5, Stat.FlatHP, new ArtifactSetBonus(Map.of(), Map.of()));
-        SubStats flowerSUbs = new SubStats(flower, 
-            Stat.FlatATK, RollQuality.AVG.multiplier,  
-            Stat.FlatDEF,  RollQuality.AVG.multiplier,
-            Stat.HPPercent, RollQuality.AVG.multiplier,
-            Stat.ATKPercent, RollQuality.AVG.multiplier
-        );
-        flower.set(flowerSUbs);
+    // @Test public void SubstatFunctionality(){
+    //     Artifact flower = new Artifact(Artifact.ArtifactType.FLOWER, 20, 5, Stat.FlatHP, new ArtifactSetBonus(Map.of(), Map.of()));
+    //     SubStats flowerSUbs = new SubStats(flower, 
+    //         Stat.FlatATK, Artifacts.RollQuality.AVG.multiplier,  
+    //         Stat.FlatDEF,  Artifacts.RollQuality.AVG.multiplier,
+    //         Stat.HPPercent, Artifacts.RollQuality.AVG.multiplier,
+    //         Stat.ATKPercent, Artifacts.RollQuality.AVG.multiplier
+    //     );
+    //     flower.set(flowerSUbs);
         
-    }
+    // }
 
 
     

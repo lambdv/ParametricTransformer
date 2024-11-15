@@ -20,11 +20,11 @@ public class Character implements MutableStatTable{
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
     private Optional<Weapon> weapon = Optional.empty();
-    private Optional<Artifact> flower = Optional.empty();
-    private Optional<Artifact> feather = Optional.empty();
-    private Optional<Artifact> sands = Optional.empty();
-    private Optional<Artifact> goblet = Optional.empty();
-    private Optional<Artifact> circlet = Optional.empty();
+    // private Optional<Artifact> flower = Optional.empty();
+    // private Optional<Artifact> feather = Optional.empty();
+    // private Optional<Artifact> sands = Optional.empty();
+    // private Optional<Artifact> goblet = Optional.empty();
+    // private Optional<Artifact> circlet = Optional.empty();
  
     public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
         this.name = name;
@@ -52,18 +52,17 @@ public class Character implements MutableStatTable{
     public double getStat(Stat type){
         return baseStats.getOrDefault(type, 0.0) 
             + fluidStats.getOrDefault(type, 0.0)
-            + weapon.map(w -> w.getStat(type)).orElse(0.0)
-            + flower.map(f -> f.getStat(type)).orElse(0.0)
-            + feather.map(f -> f.getStat(type)).orElse(0.0)
-            + sands.map(s -> s.getStat(type)).orElse(0.0)
-            + goblet.map(g -> g.getStat(type)).orElse(0.0)
-            + circlet.map(c -> c.getStat(type)).orElse(0.0);
+            + weapon.map(w -> w.getStat(type)).orElse(0.0);
+            // + flower.map(f -> f.getStat(type)).orElse(0.0)
+            // + feather.map(f -> f.getStat(type)).orElse(0.0)
+            // + sands.map(s -> s.getStat(type)).orElse(0.0)
+            // + goblet.map(g -> g.getStat(type)).orElse(0.0)
+            // + circlet.map(c -> c.getStat(type)).orElse(0.0);
     }
 
     public Map<Stat, Double> stats(){
         return Arrays.stream(Stat.values())
-            .collect(
-                HashMap::new, 
+            .collect(HashMap::new, 
                 (map, stat) -> map.put(stat, getStat(stat)), 
                 HashMap::putAll
             );
@@ -73,12 +72,7 @@ public class Character implements MutableStatTable{
         return name
             + "\nBase Stats: " + baseStats
             + "\nFluid Stats: " + fluidStats
-            + "\nWeapon: " + weapon
-            + "\nFlower: " + flower
-            + "\nFeather: " + feather
-            + "\nSands: " + sands
-            + "\nGoblet: " + goblet
-            + "\nCirclet: " + circlet;
+            + "\nWeapon: " + weapon;
     }
 
 }
