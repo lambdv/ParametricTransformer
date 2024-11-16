@@ -142,8 +142,33 @@ public class ArtifactTest {
         );
         assertEquals(0, bob.numRolls());
         assertEquals(45, bob.maxRolls());
-        
+        assertEquals(45, bob.numRollsLeft());
 
+        //4-star artifacts will have a penalty of -2 distributed substats per 4-star artifact
+        //total 2*5 = 10 substat rolls less than 5-star artifacts
+        bob = new ArtifactBuilder(
+            new Flower (ArtifactSet.empty(), 4, 16),
+            new Feather(ArtifactSet.empty(), 4, 16),
+            new Sands  (ArtifactSet.empty(),4, 16, Stat.ATKPercent),
+            new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus),
+            new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
+        );
+        assertEquals(0, bob.numRolls());
+        assertEquals(35, bob.maxRolls());
+
+        //but what if all artifacts are 4 stars for the set bonus and only 1 5-star artifact
+        //eg instructor set with 5 star er sands
+
+        bob = new ArtifactBuilder(
+            new Flower (ArtifactSet.empty(), 4, 16),
+            new Feather(ArtifactSet.empty(), 4, 16),
+            new Sands  (ArtifactSet.empty(), 5, 20, Stat.EnergyRecharge),
+            new Goblet(ArtifactSet.empty(), 4, 16, Stat.ElementalMastery),
+            new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
+        );
+
+        assertEquals(0, bob.numRolls());
+        assertEquals(37, bob.maxRolls());
     }
 
     @Test public void KQMArtifactBuilderTest(){

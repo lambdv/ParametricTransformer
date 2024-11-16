@@ -7,11 +7,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //TODO: make KQM builder allow you to specific rarity of each artifact piece
-//TODO: allow normal constructor to enable correct constrains by specific rarity of each artifact piece
 //TODO: method build up/roll into substatRolls
 //TODO: method to compile artifact builder into a stat table or map
 //TODO: method to compile artifact builder into 5 artifacts that can exist ingame
-//TODO: 4-star artifacts will have a penalty of -2 distributed substats per 4-star artifact
 
 
 /**
@@ -47,18 +45,13 @@ public class ArtifactBuilder implements MutableStatTable{
         this.sands = sands;
         this.goblet = goblet;
         this.circlet = circlet;
-
-        substatRolls = new HashMap<>();
-        
-
-        int maxNumRollsPerArtifact = 6;
-        
-        
-
-        substatConstraints = possibleSubStats().collect(Collectors.toMap(Function.identity(), stat->
-            maxNumRollsPerArtifact * (int) artifacts().map(a->a.statType()).filter(ms -> !ms.equals(stat)).count()
+        substatRolls = new HashMap<>();        
+        substatConstraints = possibleSubStats().collect(Collectors.toMap(Function.identity(), 
+            stat -> artifacts()
+                .filter(a->!a.statType().equals(stat))
+                .mapToInt(Artifacts::maxRollsFor)
+                .sum()
         ));
-
     }
 
     /**
