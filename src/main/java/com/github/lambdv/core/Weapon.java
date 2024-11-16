@@ -1,4 +1,4 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 
 import java.util.Map;
 

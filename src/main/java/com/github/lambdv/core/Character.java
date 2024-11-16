@@ -1,12 +1,14 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 import java.util.*;
 import java.util.Optional;
 import java.util.Set;
+
+import com.github.lambdv.core.Stat;
+import com.github.lambdv.core.Weapon;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import com.github.ulambda.core.Stat;
-import com.github.ulambda.core.Weapon;
 
 /**
  * Representation for an in-game Character's stat table.

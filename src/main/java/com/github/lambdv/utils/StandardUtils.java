@@ -1,4 +1,4 @@
-package com.github.ulambda.utils;
+package com.github.lambdv.utils;
 
 public class StandardUtils {
     public static String flattenName(String name){

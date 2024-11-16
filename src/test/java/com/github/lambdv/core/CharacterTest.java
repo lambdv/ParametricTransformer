@@ -1,12 +1,11 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
-import com.github.ulambda.core.Character;
-import com.github.ulambda.core.Characters;
-import com.github.ulambda.core.*;
+
+import com.github.lambdv.core.*;
 
 public class CharacterTest {
     @Test public void CreateCharacterWithConstructor(){

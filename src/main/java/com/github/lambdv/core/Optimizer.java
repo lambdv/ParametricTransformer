@@ -1,4 +1,4 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 
 /**
  * Visitor object that provides operations/algorithms to optimize a character's stats and gear distribution for a given rotation.

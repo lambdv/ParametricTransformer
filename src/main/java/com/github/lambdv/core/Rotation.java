@@ -1,4 +1,4 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 
 /**
  * External object that specifiy a character's sequence of damage instances over a repeatable cycle.

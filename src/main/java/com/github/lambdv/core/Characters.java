@@ -1,13 +1,15 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.stream.Stream;
-import com.github.ulambda.core.Character;
+
+import com.github.lambdv.core.Character;
+import com.github.lambdv.core.Weapons;
+import com.github.lambdv.utils.StandardUtils;
+
 import java.util.*;
-import com.github.ulambda.core.Weapons;
-import com.github.ulambda.utils.StandardUtils;
 
 /**
  * Utility class that provides a factory method for getting characters from a database.

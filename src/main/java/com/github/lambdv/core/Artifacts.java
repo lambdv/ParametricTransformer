@@ -1,6 +1,7 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 import org.json.JSONObject;
-import com.github.ulambda.utils.AssetManager;
+
+import com.github.lambdv.utils.AssetManager;
 /**
  * Utility class for getting artifact stat values
  */
@@ -18,7 +19,7 @@ public class Artifacts{
     public static double getMainStatValue(int rarity, int level, Stat type){
         if(mainStatValues.equals(null)) throw new RuntimeException("mainStatValues is null");
         if (type.equals(Stat.None)) return 0;
-        if(!Artifacts.levelCheck(level, rarity)) throw new IllegalArgumentException("Invalid level for rarity");
+        if(!Artifacts.checkCorrectLevelForRarity(level, rarity)) throw new IllegalArgumentException("Invalid level for rarity");
         if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
         return mainStatValues.getJSONObject(rarity+"star").getJSONArray(type.toString()).getDouble(level);
     }
@@ -29,7 +30,7 @@ public class Artifacts{
         return subStatValues.getJSONObject(rarity+"star").getDouble(type.toString());
     }
 
-    public static boolean levelCheck(int level, int rarity){
+    public static boolean checkCorrectLevelForRarity(int level, int rarity){
         if (level < 0) return false;
         return switch (rarity){
             case 1 -> level <= 4;
@@ -48,8 +49,19 @@ public class Artifacts{
         MID(0.8),
         LOW(0.7),
         AVG((1+0.9+0.8+0.7)/4); //this is what KQMC uses
+        //4-star artifacts if used have a x0.8 stat modifier, and a penalty of -2 distributed substats per 4-star artifact
         double multiplier;
         RollQuality(double multiplier){ this.multiplier = multiplier; }
     };
+
+    /**
+     * maximum number of rolls possible for a given artifact
+     * @note max assumes starts with all subs it can start with. for worse case sernario -1
+     * @param artifact
+     * @return
+     */
+    public static int maxRollsFor(Artifact artifact) {
+        return artifact.rarity()-1 + artifact.level()/4;
+    }
     
 }

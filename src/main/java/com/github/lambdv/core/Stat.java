@@ -1,10 +1,10 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.github.ulambda.utils.StandardUtils;
+import com.github.lambdv.utils.StandardUtils;
 
 /**
  * Stat enum represents types for stats

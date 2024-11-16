@@ -1,9 +1,12 @@
-package com.github.ulambda.core;
+package com.github.lambdv.core;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
+
+import com.github.lambdv.core.Stat;
+import com.github.lambdv.core.Weapons;
 
 public class WeaponTest {
     /**
