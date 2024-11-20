@@ -31,8 +31,8 @@ public final class Characters {
             return Files.lines(databasePath).parallel() //read file from databasePath as a stream of lines
                 .skip(1) //skip schema header
                 .map(line -> line.split(",")) //split each line by comma
+                .filter(row -> StandardUtils.flattenName(row[0]).equals(flattenName))
                 .map(row -> CharacterKey.of(row)) //parse each row into a CharacterKey
-                .filter(key -> StandardUtils.flattenName(key.name()).equals(flattenName))
                 .reduce((a, b)->{throw new RuntimeException("Multiple characters with the same name in the database");})
                 .map(key -> {
                     cache.put(flattenName, key);
@@ -40,7 +40,9 @@ public final class Characters {
                 })
                 .orElseThrow(()->new RuntimeException("Character not found in database"));
         }
-        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
+        catch(Exception e){ 
+            throw new RuntimeException("Error reading database: " + e.getMessage()); 
+        }
     }
 
     private static Character parseCharacter(String[] data){

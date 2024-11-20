@@ -1,14 +1,8 @@
 package com.github.lambdv.core;
 import java.util.*;
-import java.util.Optional;
-import java.util.Set;
 
 import com.github.lambdv.core.Stat;
 import com.github.lambdv.core.Weapon;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Representation for an in-game Character's stat table.
@@ -16,7 +10,7 @@ import java.util.Map;
  * @note Character's base stats are immutable and are set at construction time.
  * @note Character's stats are built by adding fluid stats and equipping artifacts and weapons.
  */
-public class Character implements MutableStatTable{
+public class Character implements DirectlyMutableStatTable{
     public String name;
     public Stat ascensionStatType;
     private final Map<Stat, Double> baseStats; 

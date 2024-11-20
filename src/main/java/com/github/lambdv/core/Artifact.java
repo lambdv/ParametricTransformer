@@ -16,7 +16,7 @@ public interface Artifact extends Equippable{
     int rarity();
     int level();
     Stat statType();
-    //substats
+    default StatTable substats(){return () -> Map.of();}
     default double statValue(){ 
         return Artifacts.getMainStatValue(rarity(), level(), statType()); 
     }
@@ -104,28 +104,28 @@ record ArtifactSet(
     }
 }
 
-// class ArtifactSubStats implements StatTable{
+class ArtifactSubStats implements StatTable{
     
-//     Map<Stat, Double> substats;
+    Map<Stat, Double> substats;
 
-//     public Map<Stat, Double> stats() {
-//         return Collections.unmodifiableMap(substats);
-//     }
+    public Map<Stat, Double> stats() {
+        return Collections.unmodifiableMap(substats);
+    }
 
     
-//     private static Stream<Stat> possibleSubStats(){
-//         return List.of(
-//             Stat.HPPercent, 
-//             Stat.FlatHP,
-//             Stat.ATKPercent,
-//             Stat.FlatATK,
-//             Stat.DEFPercent,
-//             Stat.FlatDEF,
-//             Stat.ElementalMastery,
-//             Stat.CritRate,
-//             Stat.CritDMG,
-//             Stat.EnergyRecharge
-//         ).stream();
-//     }
+    private static Stream<Stat> possibleSubStats(){
+        return List.of(
+            Stat.HPPercent, 
+            Stat.FlatHP,
+            Stat.ATKPercent,
+            Stat.FlatATK,
+            Stat.DEFPercent,
+            Stat.FlatDEF,
+            Stat.ElementalMastery,
+            Stat.CritRate,
+            Stat.CritDMG,
+            Stat.EnergyRecharge
+        ).stream();
+    }
     
-// }
+}

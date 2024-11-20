@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.Flow;
 import java.util.function.BiFunction;
 
-
 public class ArtifactTest {
     @Test public void LoadArtifactSubStatResourceAsJSON(){
         try{
@@ -178,6 +177,63 @@ public class ArtifactTest {
             Stat.CritRate
         );
         assertEquals(20, bob.numRolls());
+        assertEquals(40, bob.maxRolls());
+        assertEquals(20, bob.numRollsLeft());
+
+
+        assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
+        assertEquals(8, bob.substatConstraints.get(Stat.ATKPercent));
+        assertEquals(8, bob.substatConstraints.get(Stat.CritRate));
+    }
+
+    @Test public void ArtifactBuilderRollingSubstats(){
+        ArtifactBuilder bob = ArtifactBuilder.KQMC(
+            Stat.ATKPercent, 
+            Stat.PyroDMGBonus, 
+            Stat.CritRate
+        );
+
+        assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
+        assertEquals(20, bob.numRolls());
+
+        for (int i = 1; i <= 10; i++){
+            bob.roll(Stat.HPPercent, Artifacts.RollQuality.AVG);
+            assertEquals(9-i+1, bob.substatConstraints.get(Stat.HPPercent));
+        }
+        try{
+            bob.roll(Stat.HPPercent, Artifacts.RollQuality.AVG);
+            assertTrue(false);
+        }
+        catch(AssertionError e){}
+
+        System.out.println(bob.substats());
+        var substats = bob.substats();
+        assertEquals(12, bob.substatRolls.get(Stat.HPPercent));
+        assertEquals(0.496, (Artifacts.getSubStatValue(5, Stat.HPPercent) * Artifacts.RollQuality.AVG.multiplier)/10, 1);
+        assertEquals(0.0496 * 12, substats.get(Stat.HPPercent), 0.1);
+        assertEquals(507.88, substats.get(Stat.FlatHP), 0.1);
+        assertEquals(0.0992, substats.get(Stat.ATKPercent), 0.1);
+        assertEquals(33.08, substats.get(Stat.FlatATK), 0.1);
+        assertEquals(0.124, substats.get(Stat.DEFPercent), 0.1);
+        assertEquals(39.64, substats.get(Stat.FlatDEF), 1); //susge
+        assertEquals(39.64, substats.get(Stat.ElementalMastery), 0.1);
+        assertEquals(0.0662, substats.get(Stat.CritRate), 0.1);
+        assertEquals(0.1324, substats.get(Stat.CritDMG), 0.1);
+        assertEquals(0.1102, substats.get(Stat.EnergyRecharge), 0.1);
+    }
+
+    @Test public void ArtifactBuilderRollingSubstatsFor4Star(){
+        ArtifactBuilder bob = ArtifactBuilder.KQMC(
+            new Flower(ArtifactSet.empty(), 4, 16),
+            new Feather(ArtifactSet.empty(), 4, 16),
+            new Sands(ArtifactSet.empty(), 4, 16, Stat.ATKPercent),
+            new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus),
+            new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
+        );
+
+        //assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
+        assertEquals(25, bob.maxRolls());
+
 
 
     }

@@ -6,37 +6,57 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//TODO: make KQM builder allow you to specific rarity of each artifact piece
-//TODO: method build up/roll into substatRolls
-//TODO: method to compile artifact builder into a stat table or map
-//TODO: method to compile artifact builder into 5 artifacts that can exist ingame
-
-
 /**
  * Builder pattern to construct substats for given artifact pieces
  */
-public class ArtifactBuilder implements MutableStatTable{
+public class ArtifactBuilder implements StatTable{
     Flower flower;
     Feather feather;
     Sands sands;
     Goblet goblet;
     Circlet circlet;
 
-    private Stream<Artifact> artifacts(){return Stream.of(flower, feather, sands, goblet, circlet);}
-
     //mock substats
+    // class SubStatDetails{
+    //     int rolls;
+    //     double multipliers;
+    //     int constraints;
+    //     SubStatDetails(int rolls, double multipliers, int constraints){
+    //         this.rolls = rolls;
+    //         this.multipliers = multipliers;
+    //         this.constraints = constraints;
+    //     }
+    // }
     Map<Stat, Integer> substatRolls; //current number of substat rolls
     Map<Stat, Integer> substatConstraints; //number of substat rolls for each stat type that are left
+    Map<Stat, Double> substatMultipliers; //multipliers for each substat roll
 
     public Map<Stat, Double> stats(){
-        return Map.of(
-            flower.statType(), flower.statValue(),
-            feather.statType(), feather.statValue(),
-            sands.statType(), sands.statValue(),
-            goblet.statType(), goblet.statValue(),
-            circlet.statType(), circlet.statValue()
-            //substats
-        );
+        var stats = substats();
+        stats.merge(Stat.FlatHP, flower.statValue(), Double::sum);
+        stats.merge(Stat.FlatATK, feather.statValue(), Double::sum);
+        stats.merge(sands.statType(), sands.statValue(), Double::sum);
+        stats.merge(goblet.statType(), goblet.statValue(), Double::sum);
+        stats.merge(circlet.statType(), circlet.statValue(), Double::sum);
+
+        return stats;
+    }
+
+    /**
+     * Compute a map of stats from substat specification
+     * @return
+     */
+    public Map<Stat, Double> substats(){
+        return substatRolls.entrySet().stream()
+            .collect(Collectors.toMap(
+                e -> e.getKey(),
+                /**TODO: ASSUMS THAT EACH ARTIFACT IS FROM 5 STAR */
+                e -> {
+                    var artifactSubStatBaseValue = Artifacts.getSubStatValue(5, e.getKey());
+                    var totalMultiperSum = substatMultipliers.get(e.getKey());
+                    return (artifactSubStatBaseValue * (totalMultiperSum)); 
+                }    
+                ));
     }
 
     public ArtifactBuilder(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
@@ -52,6 +72,7 @@ public class ArtifactBuilder implements MutableStatTable{
                 .mapToInt(Artifacts::maxRollsFor)
                 .sum()
         ));
+        substatMultipliers = new HashMap<>(); 
     }
 
     /**
@@ -60,26 +81,36 @@ public class ArtifactBuilder implements MutableStatTable{
      * 20 fluid/distrubted substats left for you or an optimizer to roll
      * @return
      */
+    public static ArtifactBuilder KQMC(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
+        ArtifactBuilder builder = new ArtifactBuilder(flower, feather, sands, goblet, circlet){ 
+            @Override public int maxRolls(){ 
+                int penalty = (int) artifacts().filter(art->art.rarity() == 4).count()*2;
+                return super.maxRolls() - penalty; 
+            } 
+        };
+        //possibleSubStats().forEach(stat->builder.substatRolls.put(stat, 2));
+        possibleSubStats().forEach(stat-> {
+            builder.roll(stat, Artifacts.RollQuality.AVG);
+            builder.roll(stat, Artifacts.RollQuality.AVG);
+        });
+        builder.substatConstraints = possibleSubStats().collect(Collectors.toMap(Function.identity(), 
+            stat -> builder.artifacts()
+                .filter(art->!art.statType().equals(stat))
+                .mapToInt(s->2)
+                .sum()
+        ));
+        return builder;
+    }
+
+
     public static ArtifactBuilder KQMC(Stat sandsStat, Stat gobletStat, Stat circletStat){
-        ArtifactBuilder builder = new ArtifactBuilder(
+        return KQMC(
             new Flower(ArtifactSet.empty(), 5, 20),
             new Feather(ArtifactSet.empty(), 5, 20),
             new Sands(ArtifactSet.empty(), 5, 20, sandsStat),
             new Goblet(ArtifactSet.empty(), 5, 20, gobletStat),
             new Circlet(ArtifactSet.empty(), 5, 20, circletStat)
-        ){
-            @Override public int maxRolls(){return 40;}
-        };
-
-        builder.substatRolls = new HashMap<>();
-        possibleSubStats().forEach(stat->builder.substatRolls.put(stat, 2));
-
-        var mainstats = List.of(Stat.FlatHP, Stat.FlatATK, sandsStat, gobletStat, circletStat);
-        int maxNumRollsPerArtifact = 6; //Each substat type can have maximum 2 distributed substat rolls per artifact with a main stat that is of a different stat from it
-        builder.substatConstraints = possibleSubStats().collect(Collectors.toMap(Function.identity(), stat->
-            maxNumRollsPerArtifact * (int) mainstats.stream().filter(ms -> !ms.equals(stat)).count()
-        ));
-        return builder;
+        );
     }
 
     /**
@@ -108,6 +139,19 @@ public class ArtifactBuilder implements MutableStatTable{
     public int numRollsLeft(){
         return maxRolls() - numRolls();
     }
+
+    /**
+     * Commit a roll into a substat
+     * @param substat
+     * @param multiplier
+     */
+    public void roll(Stat substat, Artifacts.RollQuality quality){
+        assert numRollsLeft() > 0 : "No more rolls left to distribute";
+        assert substatConstraints.get(substat) > 0 : "No more rolls left for " + substat;
+        substatConstraints.merge(substat, -1, Integer::sum);
+        substatRolls.merge(substat, 1, Integer::sum);
+        substatMultipliers.merge(substat, quality.multiplier, Double::sum);
+    }
     
 
     private static Stream<Stat> possibleSubStats(){
@@ -124,5 +168,7 @@ public class ArtifactBuilder implements MutableStatTable{
             Stat.EnergyRecharge
         ).stream();
     }
+
+    Stream<Artifact> artifacts(){return Stream.of(flower, feather, sands, goblet, circlet);}
 }
 

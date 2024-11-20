@@ -18,7 +18,7 @@ public class Artifacts{
     }
     public static double getMainStatValue(int rarity, int level, Stat type){
         if(mainStatValues.equals(null)) throw new RuntimeException("mainStatValues is null");
-        if (type.equals(Stat.None)) return 0;
+        if(type.equals(Stat.None)) return 0;
         if(!Artifacts.checkCorrectLevelForRarity(level, rarity)) throw new IllegalArgumentException("Invalid level for rarity");
         if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
         return mainStatValues.getJSONObject(rarity+"star").getJSONArray(type.toString()).getDouble(level);
@@ -42,7 +42,6 @@ public class Artifacts{
         };
     }
 
-
     enum RollQuality { 
         MAX(1),
         HIGH(0.9),
@@ -63,5 +62,4 @@ public class Artifacts{
     public static int maxRollsFor(Artifact artifact) {
         return artifact.rarity()-1 + artifact.level()/4;
     }
-    
 }

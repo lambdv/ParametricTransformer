@@ -62,14 +62,18 @@ class StatAdaptor{
         "elementaldmg", Stat.ElementalDMGBonus
     ));
 
-    {Arrays.stream(Stat.values())
-        .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
-    );}
+    {
+        Arrays.stream(Stat.values())
+            .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
+        );
+    }
 
     public static Stat parseStat(String typeName){
-        return Optional.ofNullable(dictionary.get(
-            StandardUtils.flattenName(typeName)
-        ))
+        return Optional.ofNullable(
+            dictionary.get(
+                StandardUtils.flattenName(typeName)
+            )
+        )
         .orElseThrow(()->new IllegalArgumentException("Invalid stat type"));
     }
 }
