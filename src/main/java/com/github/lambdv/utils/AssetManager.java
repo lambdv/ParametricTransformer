@@ -16,10 +16,14 @@ public class AssetManager {
     public final static File getFileResource(String fileName) throws FileNotFoundException{
         return resourcePath().resolve(fileName).toFile();
     }
+
+    public final static File getDataFileResource(String fileName) throws FileNotFoundException{
+        return getFileResource("data/"+fileName);
+    }
     
     public final static JSONObject getJSONResource(String fileName) throws FileNotFoundException{
         try{
-            File resource = AssetManager.getFileResource(fileName);
+            File resource = AssetManager.getDataFileResource(fileName);
             var bytes = Files.readAllBytes(resource.toPath());
             String content = new String(bytes);
             return new JSONObject(content);

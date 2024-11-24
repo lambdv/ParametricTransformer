@@ -5,22 +5,33 @@ import com.github.lambdv.core.Stat;
 import com.github.lambdv.core.Weapon;
 
 /**
- * Representation for an in-game Character's stat table.
- * @note Character objects are a generalization of a builder pattern where the stat table is built up and compiled into an immutable instance.
- * @note Character's base stats are immutable and are set at construction time.
- * @note Character's stats are built by adding fluid stats and equipping artifacts and weapons.
+ * Object representation of a Character's total stat table
+ * @note is a composite of an immutable base stats, a weapon, artifacts and a mutable fluid stat table
+ * @note is a generalization of the Builder pattern for constructing characters through Mutation
+ * 
  */
-public class Character implements DirectlyMutableStatTable{
+public class Character implements StatTable{
+    //character identity details
     public String name;
     public Stat ascensionStatType;
+    //composite stat tables
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
     private Optional<Weapon> weapon = Optional.empty();
-    // private Optional<Artifact> flower = Optional.empty();
-    // private Optional<Artifact> feather = Optional.empty();
-    // private Optional<Artifact> sands = Optional.empty();
-    // private Optional<Artifact> goblet = Optional.empty();
-    // private Optional<Artifact> circlet = Optional.empty();
+    private Optional<Flower> flower = Optional.empty();
+    private Optional<Feather> feather = Optional.empty();
+    private Optional<Sands> sands = Optional.empty();
+    private Optional<Goblet> goblet = Optional.empty();
+    private Optional<Circlet> circlet = Optional.empty();
+
+    //private Map<Stat, Double> substats
+    //private Map<Stat, Double> 2pcsetbonus
+    //private Map<Stat, Double> 4pcsetbonus
+
+    //public void equip(weapon)
+    //public void equip(artifact)
+    //public void optimize(visitor, rotation)
+    
  
     public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
         this.name = name;
@@ -37,32 +48,70 @@ public class Character implements DirectlyMutableStatTable{
         fluidStats = new HashMap<>();
     }
 
-    public Character (Characters.CharacterKey key){
-        this(key.name(), key.baseHP(), key.baseATK(), key.baseDEF(), key.ascensionStatType(), key.ascensionStatAmount());
+    public Character add(Stat type, double amount){
+        fluidStats.merge(type, amount, Double::sum);
+        return this;
     }
 
-    public double addStat(Stat type, double amount){
-        return fluidStats.merge(type, amount, Double::sum);
+    public Character add(StatTable stats){
+        stats.stats().forEach(this::add);
+        return this;
     }
-
-    public double getStat(Stat type){
+    
+    public double get(Stat type){
         return baseStats.getOrDefault(type, 0.0) 
             + fluidStats.getOrDefault(type, 0.0)
-            + weapon.map(w -> w.getStat(type)).orElse(0.0);
-            // + flower.map(f -> f.getStat(type)).orElse(0.0)
-            // + feather.map(f -> f.getStat(type)).orElse(0.0)
-            // + sands.map(s -> s.getStat(type)).orElse(0.0)
-            // + goblet.map(g -> g.getStat(type)).orElse(0.0)
-            // + circlet.map(c -> c.getStat(type)).orElse(0.0);
+            + weapon.map(w -> w.getStat(type)).orElse(0.0)
+            + flower.map(f -> f.getStat(type)).orElse(0.0)
+            + feather.map(f -> f.getStat(type)).orElse(0.0)
+            + sands.map(s -> s.getStat(type)).orElse(0.0)
+            + goblet.map(g -> g.getStat(type)).orElse(0.0)
+            + circlet.map(c -> c.getStat(type)).orElse(0.0);
     }
+
+    @Override public double getStat(Stat type){
+        return get(type);
+    }
+    
+
+    public Character equip(Weapon weapon){
+        this.weapon = Optional.of(weapon);
+        return this;
+    }
+
+    public Character equip(Artifact artifact){
+        switch (artifact) {
+            case Flower flowerArtifact -> this.flower = Optional.of(flowerArtifact);
+            case Feather featherArtifact -> this.feather = Optional.of(featherArtifact);
+            case Sands sandsArtifact -> this.sands = Optional.of(sandsArtifact);
+            case Goblet gobletArtifact -> this.goblet = Optional.of(gobletArtifact);
+            case Circlet circletArtifact -> this.circlet = Optional.of(circletArtifact);
+            default -> throw new IllegalArgumentException("Unknown artifact type: " + artifact.getClass().getName());
+        }
+        return this;
+    }
+
+    public Optional<Weapon> weapon(){return weapon;}
+    public Optional<Flower> flower(){return flower;}
+    public Optional<Feather> feather(){return feather;}
+    public Optional<Sands> sands(){return sands;}
+    public Optional<Goblet> goblet(){return goblet;}
+    public Optional<Circlet> circlet(){return circlet;}
+
+    public void unequipWeapon(){weapon = Optional.empty();}
+    public void unequipFlower(){flower = Optional.empty();}
+    public void unequipFeather(){feather = Optional.empty();}
+    public void unequipSands(){sands = Optional.empty();}
+    public void unequipGoblet(){goblet = Optional.empty();}
+    public void unequipCirclet(){circlet = Optional.empty();}
+
 
     public Map<Stat, Double> stats(){
         return Arrays.stream(Stat.values())
-            .collect(HashMap::new, 
-                (map, stat) -> map.put(stat, getStat(stat)), 
-                HashMap::putAll
-            );
-    }
+            .filter(stat -> get(stat) != 0.0)
+            .map(stat -> Map.entry(stat, get(stat)))
+            .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
+}
 
     @Override public String toString(){
         return name
@@ -70,5 +119,4 @@ public class Character implements DirectlyMutableStatTable{
             + "\nFluid Stats: " + fluidStats
             + "\nWeapon: " + weapon;
     }
-
 }

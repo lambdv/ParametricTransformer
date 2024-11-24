@@ -1,10 +1,11 @@
 package com.github.lambdv.core;
+import com.github.lambdv.utils.StandardUtils;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.github.lambdv.utils.StandardUtils;
+
 
 /**
  * Stat enum represents types for stats
@@ -46,34 +47,47 @@ public enum Stat {
     public static Stat parseStat(String typeName){
         return StatAdaptor.parseStat(typeName);
     }
-};
 
-class StatAdaptor{
-    public static Map<String, Stat> dictionary = new HashMap<>(Map.of(
-        "cr", Stat.CritRate,
-        "cd", Stat.CritDMG,
-        "em", Stat.ElementalMastery,
-        "er", Stat.EnergyRecharge,
-        "hp", Stat.HPPercent,
-        "atk", Stat.ATKPercent,
-        "def", Stat.DEFPercent,
-        "hb", Stat.HealingBonus,
-        "n", Stat.None,
-        "elementaldmg", Stat.ElementalDMGBonus
-    ));
-
-    {
-        Arrays.stream(Stat.values())
-            .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
-        );
+    public Map.Entry<Stat, Double> of(double amount){
+        return new StatPair(this, amount);
     }
 
-    public static Stat parseStat(String typeName){
-        return Optional.ofNullable(
-            dictionary.get(
-                StandardUtils.flattenName(typeName)
+    
+    private class StatAdaptor{
+        public static Map<String, Stat> dictionary = new HashMap<>(Map.of(
+            "cr", Stat.CritRate,
+            "cd", Stat.CritDMG,
+            "em", Stat.ElementalMastery,
+            "er", Stat.EnergyRecharge,
+            "hp", Stat.HPPercent,
+            "atk", Stat.ATKPercent,
+            "def", Stat.DEFPercent,
+            "hb", Stat.HealingBonus,
+            "n", Stat.None,
+            "elementaldmg", Stat.ElementalDMGBonus
+        ));
+
+        {
+            Arrays.stream(Stat.values())
+                .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
+            );
+        }
+
+        public static Stat parseStat(String typeName){
+            return Optional.ofNullable(
+                dictionary.get(
+                    StandardUtils.flattenName(typeName)
+                )
             )
-        )
-        .orElseThrow(()->new IllegalArgumentException("Invalid stat type"));
+            .orElseThrow(()->new IllegalArgumentException("Invalid stat type"));
+        }
+    }
+};
+
+record StatPair(Stat type, Double amount) implements Map.Entry<Stat, Double> {
+    @Override public Stat getKey() { return type; }
+    @Override public Double getValue() { return amount; }
+    @Override public Double setValue(Double value) {
+        throw new UnsupportedOperationException("StatPair is immutable");
     }
 }

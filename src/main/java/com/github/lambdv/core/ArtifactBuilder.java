@@ -16,17 +16,8 @@ public class ArtifactBuilder implements StatTable{
     Goblet goblet;
     Circlet circlet;
 
-    //mock substats
-    // class SubStatDetails{
-    //     int rolls;
-    //     double multipliers;
-    //     int constraints;
-    //     SubStatDetails(int rolls, double multipliers, int constraints){
-    //         this.rolls = rolls;
-    //         this.multipliers = multipliers;
-    //         this.constraints = constraints;
-    //     }
-    // }
+    private record Roll(int rarity, Artifacts.RollQuality quality){} 
+
     Map<Stat, Integer> substatRolls; //current number of substat rolls
     Map<Stat, Integer> substatConstraints; //number of substat rolls for each stat type that are left
     Map<Stat, Double> substatMultipliers; //multipliers for each substat roll
@@ -38,7 +29,6 @@ public class ArtifactBuilder implements StatTable{
         stats.merge(sands.statType(), sands.statValue(), Double::sum);
         stats.merge(goblet.statType(), goblet.statValue(), Double::sum);
         stats.merge(circlet.statType(), circlet.statValue(), Double::sum);
-
         return stats;
     }
 
@@ -49,14 +39,15 @@ public class ArtifactBuilder implements StatTable{
     public Map<Stat, Double> substats(){
         return substatRolls.entrySet().stream()
             .collect(Collectors.toMap(
-                e -> e.getKey(),
-                /**TODO: ASSUMS THAT EACH ARTIFACT IS FROM 5 STAR */
+                Map.Entry::getKey,
                 e -> {
+                    /**TODO: ASSUMS THAT EACH ARTIFACT IS FROM 5 STAR */
+                    System.err.println("Warning: substat value is based on 5 star artifact");
                     var artifactSubStatBaseValue = Artifacts.getSubStatValue(5, e.getKey());
                     var totalMultiperSum = substatMultipliers.get(e.getKey());
                     return (artifactSubStatBaseValue * (totalMultiperSum)); 
                 }    
-                ));
+            ));
     }
 
     public ArtifactBuilder(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
@@ -85,7 +76,8 @@ public class ArtifactBuilder implements StatTable{
         ArtifactBuilder builder = new ArtifactBuilder(flower, feather, sands, goblet, circlet){ 
             @Override public int maxRolls(){ 
                 int penalty = (int) artifacts().filter(art->art.rarity() == 4).count()*2;
-                return super.maxRolls() - penalty; 
+                int numArts = (int) artifacts().count();
+                return super.maxRolls() - numArts - penalty; 
             } 
         };
         //possibleSubStats().forEach(stat->builder.substatRolls.put(stat, 2));
