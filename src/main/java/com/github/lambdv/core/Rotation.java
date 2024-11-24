@@ -24,34 +24,4 @@ public class Rotation {
 }
 
 
-interface DamageInstance extends Function<StatTable, Double>{
-    Double apply(StatTable target);
-} 
 
-class DamageFormulas {
-    public static DamageInstance DefaultATKFormula(double motionValue, Map<Stat, Double> buffs){  
-        return (c) -> {
-            //base
-            var totalATK = (c.getStat(Stat.BaseATK) * (1+c.getStat(Stat.ATKPercent)) + c.getStat(Stat.FlatATK));
-            var baseDMG = (motionValue * totalATK);
-            var baseDMGMultiplier = 1;
-            var additiveBaseDMGBonus = 0;
-
-            //dmg multipliers
-            var avgCritMultiplier = (1 + (Math.min(c.getStat(Stat.CritRate), 1.0) * c.getStat(Stat.CritDMG)));
-            var totalDMGBonusMultiplier = (1 + c.getStat(Stat.DMGBonus));
-            var amplifierMultiuplier = 1;
-
-            //enemy multipliers
-            var defMultiplier = 1;
-            var resMultiplier = 1;
-
-            return ((baseDMG * baseDMGMultiplier) + additiveBaseDMGBonus)
-                * avgCritMultiplier
-                * totalDMGBonusMultiplier
-                * defMultiplier
-                * resMultiplier
-                * amplifierMultiuplier;
-        };
-    }
-}
