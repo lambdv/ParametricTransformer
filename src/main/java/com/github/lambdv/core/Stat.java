@@ -47,11 +47,6 @@ public enum Stat {
     public static Stat parseStat(String typeName){
         return StatAdaptor.parseStat(typeName);
     }
-
-    public Map.Entry<Stat, Double> of(double amount){
-        return new StatPair(this, amount);
-    }
-
     
     private class StatAdaptor{
         public static Map<String, Stat> dictionary = new HashMap<>(Map.of(
@@ -84,10 +79,3 @@ public enum Stat {
     }
 };
 
-record StatPair(Stat type, Double amount) implements Map.Entry<Stat, Double> {
-    @Override public Stat getKey() { return type; }
-    @Override public Double getValue() { return amount; }
-    @Override public Double setValue(Double value) {
-        throw new UnsupportedOperationException("StatPair is immutable");
-    }
-}

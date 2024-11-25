@@ -1,10 +1,42 @@
 package com.github.lambdv.core;
 import java.util.Map;
 
-/**
- * 
- */
+
 public class DamageFormulas {
+    public static DamageInstance DefaultATKFormula(int instances, double motionValue, StatTable buffs){  
+        return (c) -> {
+            var total = StatTables.merge(c, buffs);
+            return Formulas.FullDamageFormula(
+                instances,
+                Formulas.totalATK(total),
+                motionValue,
+                1.0,
+                0.0,
+                Formulas.AvgCritMultiplier(total.get(Stat.CritRate), total.get(Stat.CritDMG)),
+                total.get(Stat.DMGBonus),
+                0.0,
+                Formulas.DefMultiplier(90, Enemy.KQMC(), 0.0, 0.0),
+                Formulas.ResMultiplier(Enemy.KQMC(), 0),
+                1.0   
+            );
+        };
+    }
+    private DamageFormulas(){}
+}
+
+class Formulas{
+    public static double totalATK(StatTable c){
+        return (c.get(Stat.BaseATK) * (1 + c.get(Stat.ATKPercent))) + c.get(Stat.FlatATK);
+    }
+
+    public static double totalDEF(StatTable c){
+        return (c.get(Stat.BaseDEF) * (1 + c.get(Stat.DEFPercent))) + c.get(Stat.FlatDEF);
+    }
+
+    public static double totalHP(StatTable c){
+        return (c.get(Stat.BaseHP) * (1 + c.get(Stat.HPPercent))) + c.get(Stat.FlatHP);
+    }
+
     public static double AvgCritMultiplier(double critRate, double critDMG){
         return (1 + ((Math.max(0.0, Math.min(1.0, critRate))) * critDMG));
     }
@@ -13,15 +45,24 @@ public class DamageFormulas {
         return (characterLevel + 100) / ((characterLevel + 100.0) + (enemy.level() + 100.0) * (1.0-Math.min(defReduction, 0.9)) * (1.0-defIgnore)); 
     }
 
-    public static double ResMultiplier(double res){
-        return 1 - (res / (res + 1000));
+    public static double ResMultiplier(Enemy enemy, double resistanceReduction){
+        var baseResistance = enemy.universalRes();
+        var resistance = baseResistance - resistanceReduction;
+        if(resistance < 0)
+            return 1 - (resistance/2);
+        else if (0 <= resistance && resistance < 0.75)
+            return 1 - resistance;
+        else //resistance >= 0.75
+            return 1/(4*resistance+1);
     }
 
-
+    public static double AmplifierMultiplier(double amplifier, double elementalMastery, double reactionBonus){
+        return (amplifier * (1 + (2.78 * elementalMastery)/(1400 + elementalMastery) + reactionBonus));
+    }
 
     public static Double FullDamageFormula(
         double instances, 
-        double totalATK,
+        double totalScalingStat,
         double motionValue,
         double baseDMGMultiplier,
         double additiveBaseDMGBonus,
@@ -30,43 +71,16 @@ public class DamageFormulas {
         double dmgReductionTarget,
         double defMultiplier,
         double resMultiplier,
-        double amplifierMultiuplier,
-        Map<Stat, Double> buffs
-    ){  
-        return instances * ((((totalATK * motionValue) * baseDMGMultiplier) + additiveBaseDMGBonus)
+        double amplifierMultiuplier
+    ){ 
+        return  (((totalScalingStat * motionValue) * baseDMGMultiplier) + additiveBaseDMGBonus)
                 * avgCritMultiplier
                 * (1+totalDMGBonus-dmgReductionTarget)
                 * defMultiplier
                 * resMultiplier
-                * amplifierMultiuplier);
+                * amplifierMultiuplier
+                * instances;
     }
 
-
-
-
-    /**
-     * 
-     * @param motionValue
-     * @param buffs
-     * @return
-     */
-    public static DamageInstance DefaultATKFormula(int instances, double motionValue, Map<Stat, Double> buffs){  
-        return (c) -> FullDamageFormula(
-            instances,
-            c.get(Stat.BaseATK) * (1+c.get(Stat.ATKPercent)) + c.get(Stat.FlatATK),
-            motionValue,
-            1.0,
-            0.0,
-            AvgCritMultiplier(c.get(Stat.CritRate), c.get(Stat.CritDMG)),
-            c.get(Stat.DMGBonus),
-            0.0,
-            1.0,
-            1.0,
-            1.0,
-            buffs
-        );
-    }
-
-
-    private DamageFormulas(){}
+    private Formulas(){}
 }

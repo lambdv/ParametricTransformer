@@ -35,12 +35,22 @@ public class WeaponTest {
 
 
     @Test public void multiOfMethod(){
-        // var w = Weapons.of("Ibis Piercer", "Mistsplitter Reforged");
-        // assertNotNull(w);
-        // assertEquals(w.length, 2);
-        // assertTrue(w[0].name().equals("Ibis Piercer"));
-        // assertEquals(w[0].baseATK(), 565.0);
-        // assertTrue(w[1].name().equals("Mistsplitter Reforged"));
-        // assertEquals(w[1].baseATK(), 674);
+        var ws = Weapons.of("Ibis Piercer", "Mistsplitter Reforged");
+        assertNotNull(ws);
+        assertTrue(ws.size() == 2);
+        assertTrue(ws.containsKey("ibispiercer"));
+        assertTrue(ws.containsKey("mistsplitterreforged"));
+        assertTrue(ws.get("ibispiercer") == Weapons.of("ibis piercer"));
+        assertTrue(ws.get("mistsplitterreforged") == Weapons.of("mistsplitter reforged"));         
+    }
+
+    @Test public void partialMatchTest(){
+        assertTrue(Weapons.partialMatch("Ibis", "Ibis Piercer"));
+        assertTrue(Weapons.partialMatch("Ibis", "Ibis"));
+        assertTrue(Weapons.partialMatch("wgs", "wolf's gravestone"));
+        assertTrue(Weapons.partialMatch("fav bow", "favonius warbow"));
+        assertFalse(Weapons.partialMatch("fav bow", "favonius lance"));
+        
+
     }
 }

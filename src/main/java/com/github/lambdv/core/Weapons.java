@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import com.github.lambdv.utils.*;
 
@@ -14,7 +15,6 @@ import com.github.lambdv.utils.*;
 public final class Weapons {
     private static final Map<String, Weapon> cache = new HashMap<>(); //cache for weapons
     private static final Path databasePath = Paths.get("").toAbsolutePath().resolve("src/resources/data/weapons.csv");
-    private Weapons(){}
     
     /**
      * Factory method for getting a weapon from the database
@@ -28,9 +28,9 @@ public final class Weapons {
         var normalizedName = StandardUtils.flattenName(name);
         if(cache.containsKey(normalizedName))
             return cache.get(normalizedName);
-
         try {
-            return Files.lines(databasePath).parallel()
+            return Files.lines(databasePath)
+                .parallel()
                 .skip(1)
                 .map(line -> line.split(", "))
                 .filter(line -> StandardUtils.flattenName(line[0]).equals(normalizedName))
@@ -40,41 +40,38 @@ public final class Weapons {
                 .orElseThrow(() -> new RuntimeException("Weapon not found in database"));
         }
         catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
-        // Optional<Weapon> weapon = Optional.empty();
-        // try (Scanner scanner = new Scanner(databasePath)){
-        //     scanner.nextLine(); //slip schema header
-        //     //Optional<Weapon> partialMatch = Optional.empty();
-        //     while (scanner.hasNextLine()) {
-        //         String[] row = scanner.nextLine().split(", "); //WeaponName, baseATK, stat, statvalue
-        //         String weaponName = flattenName(row[0]);
-        //         if (!weaponName.equals(name)) 
-        //             continue;
-        //         weapon = Optional.of(parseWeapon(row));
-        //         cache.put(name, weapon.get());
-        //         break;
-        //     }
-        //     scanner.close();
-        // }
-        
-        // catch (Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
-        // return weapon.orElseThrow(()-> new RuntimeException("Weapon not found in database"));
     }
 
-    public static Weapon[] of(String... names){
+    /**
+     * Factory method for caching multiple weapons from the database in 1 loop and returns a map of weapons
+     * @param names
+     * @return
+     * @throws RuntimeException exception is leaked if weapon is not found: program should crash
+     */
+    public static Map<String, Weapon> of(String... names){
+        try {   
+            Files.lines(databasePath)
+                .parallel()
+                .skip(1)
+                .map(line -> line.split(", "))
+                .filter(line -> Arrays.stream(names).anyMatch(name -> StandardUtils.flattenName(line[0]).equals(StandardUtils.flattenName(name))))
+                .map(Weapons::parseWeapon)
+                .forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
+        }
+        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
+        return Collections.unmodifiableMap(cache);
+    }
 
-        throw new UnsupportedOperationException("Not implemented yet");
-        // List<String> nameList = Arrays.stream(names).map(Weapons::flattenName).toList();
-        // try {   
-        //     return Files.lines(databasePath).parallel()
-        //         .skip(1)
-        //         .map(line -> line.split(", "))
-        //         .filter(line -> nameList.contains(flattenName(line[0])))
-        //         .sorted(Comparator.comparing(line -> nameList.indexOf(flattenName(line[0]))))
-        //         .map(Weapons::parseWeapon)
-        //         .toArray(Weapon[]::new);
-        // }
-
-        // catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
+    public static void cacheAll(){
+        try {
+            Files.lines(databasePath)
+                .parallel()
+                .skip(1)
+                .map(line -> line.split(", "))
+                .map(Weapons::parseWeapon)
+                .forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
+        }
+        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
     }
 
     private static Weapon parseWeapon(String[] data){
@@ -90,4 +87,19 @@ public final class Weapons {
                 Double.parseDouble(data[3].replaceAll("%", "")) 
         );
     }
+
+    public static boolean partialMatch(String needle, String haystack){
+        var narray = StandardUtils.flattenName(needle).toCharArray();
+        var harray = StandardUtils.flattenName(haystack).toCharArray();
+
+        int nidx = 0;
+        for(int i = 0; i < harray.length; i++){
+            if(harray[i] == narray[nidx]){
+                nidx++;
+                if(nidx == narray.length) return true;
+            }
+        }
+        return false;
+    } 
+    private Weapons(){}
 }

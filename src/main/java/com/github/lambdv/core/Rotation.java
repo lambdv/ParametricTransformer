@@ -11,6 +11,21 @@ import java.util.function.Function;
 public class Rotation {
     StatTable target;
     Map<String, DamageInstance> instances;
+
+    public Rotation(StatTable target){
+        this.target = target;
+        instances = new HashMap<>();
+    }
+
+    public Rotation(StatTable target, Map<String, DamageInstance> instances){
+        this.target = target;
+        this.instances = instances;
+    }
+
+    public Rotation add(String name, DamageInstance instance){
+        instances.put(name, instance);
+        return this;
+    }
     
     public double compute(StatTable target){
         return instances.values().stream()
@@ -22,6 +37,3 @@ public class Rotation {
         return compute(target);
     }
 }
-
-
-

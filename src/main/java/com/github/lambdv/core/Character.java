@@ -12,6 +12,7 @@ import com.github.lambdv.core.Weapon;
  */
 public class Character implements StatTable{
     //character identity details
+    public int level = 90;
     public String name;
     public Stat ascensionStatType;
     //composite stat tables
