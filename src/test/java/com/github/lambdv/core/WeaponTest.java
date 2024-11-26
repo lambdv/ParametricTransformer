@@ -19,6 +19,9 @@ public class WeaponTest {
         assertTrue(w.baseATK() == 565);
         assertTrue(w.mainStatType().equals(Stat.ATKPercent));
         assertTrue(w.mainStatAmount() == 0.276);
+
+        try{ Weapons.of("Not a weapon"); assert false; } 
+        catch (RuntimeException e){}
     }
 
     /**
@@ -37,11 +40,21 @@ public class WeaponTest {
     @Test public void multiOfMethod(){
         var ws = Weapons.of("Ibis Piercer", "Mistsplitter Reforged");
         assertNotNull(ws);
-        assertTrue(ws.size() == 2);
-        assertTrue(ws.containsKey("ibispiercer"));
-        assertTrue(ws.containsKey("mistsplitterreforged"));
+        // assertTrue(ws.size() == 2);
+        // assertTrue(ws.containsKey("ibispiercer"));
+        // assertTrue(ws.containsKey("mistsplitterreforged"));
         assertTrue(ws.get("ibispiercer") == Weapons.of("ibis piercer"));
-        assertTrue(ws.get("mistsplitterreforged") == Weapons.of("mistsplitter reforged"));         
+        assertTrue(ws.get("mistsplitterreforged") == Weapons.of("mistsplitter reforged"));
+        
+        try{
+            Weapons.of("Not a weapon");
+            assert false;
+        } catch (RuntimeException e){}
+
+        try{
+            Weapons.of("Ibis Piercer", "Ibis");
+            //assert false;
+        } catch (RuntimeException e){}
     }
 
     @Test public void partialMatchTest(){

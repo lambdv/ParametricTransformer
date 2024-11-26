@@ -30,7 +30,7 @@ public class Artifacts{
         return subStatValues.getJSONObject(rarity+"star").getDouble(type.toString());
     }
 
-    public static boolean checkCorrectLevelForRarity(int level, int rarity){
+    public static boolean checkCorrectLevelForRarity(int level, int rarity) throws IllegalArgumentException{
         if (level < 0) return false;
         return switch (rarity){
             case 1 -> level <= 4;
@@ -40,6 +40,16 @@ public class Artifacts{
             case 5 -> level <= 20;
             default -> false;
         };
+    }
+
+    public static void substatTypeIsAllowListed(Artifact artifact) throws IllegalArgumentException{
+        if(artifact instanceof Flower || artifact instanceof Feather) return;
+
+        if (artifact instanceof Sands s && Sands.allowlist().contains(s.statType())) return;
+        if (artifact instanceof Goblet g && Goblet.allowlist().contains(g.statType())) return;
+        if (artifact instanceof Circlet c && Circlet.allowlist().contains(c.statType())) return;
+
+        throw new IllegalArgumentException(artifact.statType() + " is an invalid stat type for " + artifact.getClass());
     }
 
     enum RollQuality { 

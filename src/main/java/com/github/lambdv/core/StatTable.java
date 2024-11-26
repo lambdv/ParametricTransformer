@@ -23,12 +23,8 @@ public interface StatTable{
      * @param type
      * @return
      */
-    public default double getStat(Stat type){
-        return stats().getOrDefault(type, 0.0);
-    }
-
     public default double get(Stat type){
-        return getStat(type);
+        return stats().getOrDefault(type, 0.0);
     }
     
     /**
@@ -47,31 +43,14 @@ public interface StatTable{
         return stats().entrySet().stream();
     }
 
+    /**
+     * Get the string representation of the stat table.
+     * @return
+     */
+    public default String ToString(){
+        return stats().toString();
+    }
 }
-// /**
-//  * StatTables where values can be directly modified after creation.
-//  * @note contract for a mutable stat table is that stats() should return a mutable map to allow add and set methods to directly modify the map.
-//  */
-// interface MutableStatTable extends StatTable{
-//     /**
-//      * Method to add a stat to the table.
-//      * @param type
-//      * @param amount
-//      * @return
-//      */
-//     public default double addStat(Stat type, double amount){
-//         return stats().merge(type, amount, Double::sum);
-//     }
-//     /**
-//      * Method to set a stat to the table.
-//      * @param type
-//      * @param amount
-//      * @return
-//      */
-//     public default double setStat(Stat type, double amount){
-//         return stats().put(type, amount);
-//     }
-// }
 
 /**
  * StatTables that can be equipped to a character.
@@ -82,19 +61,29 @@ interface Equippable extends StatTable{}
  * Utility class for merging multiple stat tables into one.
  */
 class StatTables {
-    private StatTables() {}
-    @SafeVarargs 
-    public static <T extends Map<Stat, Double>> StatTable merge(T... statTablesMap) {
+    /**
+     * Make a new stat table that is the sum of all stat tables.
+     * @param <T>
+     * @param statTablesMap
+     * @return
+     */
+    @SafeVarargs public static <T extends Map<Stat, Double>> StatTable merge(T... statTablesMap) {
         return () -> Arrays.stream(statTablesMap)
             .<Map.Entry<Stat, Double>>mapMulti((map, c) -> map.forEach((k, v) -> c.accept(Map.entry(k, v))))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum));
     }
-    @SuppressWarnings("unchecked")
-    public static <T extends StatTable> StatTable merge(T... statTables) {
+    /**
+     * Make a new stat table that is the sum of all stat tables.
+     * @param <T>
+     * @param statTables
+     * @return
+     */
+    @SuppressWarnings("unchecked") public static <T extends StatTable> StatTable merge(T... statTables) {
         return merge(Arrays.stream(statTables)
                     .map(StatTable::stats)
                     .map(m->(Map<Stat, Double>)m)
                     .toArray(Map[]::new)
         );
     }
+    private StatTables() {}
 }

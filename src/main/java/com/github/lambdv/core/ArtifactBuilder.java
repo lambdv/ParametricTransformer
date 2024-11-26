@@ -16,11 +16,10 @@ public class ArtifactBuilder implements StatTable{
     Goblet goblet;
     Circlet circlet;
 
-    private record Roll(int rarity, Artifacts.RollQuality quality){} 
+    private record Roll(int rarity, Artifacts.RollQuality quality){}
+    Map<Stat, List<Roll>> substatRolls; //current number of substat rolls
 
-    Map<Stat, Integer> substatRolls; //current number of substat rolls
     Map<Stat, Integer> substatConstraints; //number of substat rolls for each stat type that are left
-    Map<Stat, Double> substatMultipliers; //multipliers for each substat roll
 
     public Map<Stat, Double> stats(){
         var stats = substats();
@@ -38,16 +37,11 @@ public class ArtifactBuilder implements StatTable{
      */
     public Map<Stat, Double> substats(){
         return substatRolls.entrySet().stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                e -> {
-                    /**TODO: ASSUMS THAT EACH ARTIFACT IS FROM 5 STAR */
-                    System.err.println("Warning: substat value is based on 5 star artifact");
-                    var artifactSubStatBaseValue = Artifacts.getSubStatValue(5, e.getKey());
-                    var totalMultiperSum = substatMultipliers.get(e.getKey());
-                    return (artifactSubStatBaseValue * (totalMultiperSum)); 
-                }    
-            ));
+            .collect(Collectors.toMap( //return map<Stat, Double> from map<Stat, List<Roll>>
+                e -> e.getKey(), //keys stay the same
+                e -> e.getValue().stream() //values are computed from the list of rolls
+                        .mapToDouble(r -> Artifacts.getSubStatValue(r.rarity, e.getKey()) * r.quality.multiplier) 
+                        .sum()));
     }
 
     public ArtifactBuilder(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
@@ -63,7 +57,6 @@ public class ArtifactBuilder implements StatTable{
                 .mapToInt(Artifacts::maxRollsFor)
                 .sum()
         ));
-        substatMultipliers = new HashMap<>(); 
     }
 
     /**
@@ -110,7 +103,11 @@ public class ArtifactBuilder implements StatTable{
      * @return
      */
     public int numRolls(){
-        return substatRolls.values().stream().reduce(0, Integer::sum);
+        return substatRolls.values().stream().mapToInt(List::size).sum();
+    }
+
+    public int numRolls(Stat substat){
+        return substatRolls.get(substat).size();
     }
 
     /**
@@ -141,8 +138,10 @@ public class ArtifactBuilder implements StatTable{
         assert numRollsLeft() > 0 : "No more rolls left to distribute";
         assert substatConstraints.get(substat) > 0 : "No more rolls left for " + substat;
         substatConstraints.merge(substat, -1, Integer::sum);
-        substatRolls.merge(substat, 1, Integer::sum);
-        substatMultipliers.merge(substat, quality.multiplier, Double::sum);
+        Roll roll = new Roll(5, quality);
+        substatRolls.merge(substat, new ArrayList<>(List.of(roll)), (l1, l2)->{l1.add(roll); return l1;});
+        //substatRolls.merge(substat, 1, Integer::sum);
+        //substatMultipliers.merge(substat, quality.multiplier, Double::sum);
     }
     
 

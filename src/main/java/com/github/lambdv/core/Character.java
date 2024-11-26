@@ -59,19 +59,15 @@ public class Character implements StatTable{
         return this;
     }
     
-    public double get(Stat type){
+    @Override public double get(Stat type){
         return baseStats.getOrDefault(type, 0.0) 
             + fluidStats.getOrDefault(type, 0.0)
-            + weapon.map(w -> w.getStat(type)).orElse(0.0)
-            + flower.map(f -> f.getStat(type)).orElse(0.0)
-            + feather.map(f -> f.getStat(type)).orElse(0.0)
-            + sands.map(s -> s.getStat(type)).orElse(0.0)
-            + goblet.map(g -> g.getStat(type)).orElse(0.0)
-            + circlet.map(c -> c.getStat(type)).orElse(0.0);
-    }
-
-    @Override public double getStat(Stat type){
-        return get(type);
+            + weapon.map(w -> w.get(type)).orElse(0.0)
+            + flower.map(f -> f.get(type)).orElse(0.0)
+            + feather.map(f -> f.get(type)).orElse(0.0)
+            + sands.map(s -> s.get(type)).orElse(0.0)
+            + goblet.map(g -> g.get(type)).orElse(0.0)
+            + circlet.map(c -> c.get(type)).orElse(0.0);
     }
     
 
@@ -81,12 +77,13 @@ public class Character implements StatTable{
     }
 
     public Character equip(Artifact artifact){
+        //pattern matching
         switch (artifact) {
-            case Flower flowerArtifact -> this.flower = Optional.of(flowerArtifact);
-            case Feather featherArtifact -> this.feather = Optional.of(featherArtifact);
-            case Sands sandsArtifact -> this.sands = Optional.of(sandsArtifact);
-            case Goblet gobletArtifact -> this.goblet = Optional.of(gobletArtifact);
-            case Circlet circletArtifact -> this.circlet = Optional.of(circletArtifact);
+            case Flower flower -> this.flower = Optional.of(flower);
+            case Feather feather -> this.feather = Optional.of(feather);
+            case Sands sands -> this.sands = Optional.of(sands);
+            case Goblet goblet -> this.goblet = Optional.of(goblet);
+            case Circlet circlet -> this.circlet = Optional.of(circlet);
             default -> throw new IllegalArgumentException("Unknown artifact type: " + artifact.getClass().getName());
         }
         return this;

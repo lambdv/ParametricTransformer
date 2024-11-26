@@ -207,7 +207,7 @@ public class ArtifactTest {
 
         System.out.println(bob.substats());
         var substats = bob.substats();
-        assertEquals(12, bob.substatRolls.get(Stat.HPPercent));
+        assertEquals(12, bob.numRolls(Stat.HPPercent));
         assertEquals(0.496, (Artifacts.getSubStatValue(5, Stat.HPPercent) * Artifacts.RollQuality.AVG.multiplier)/10, 1);
         assertEquals(0.0496 * 12, substats.get(Stat.HPPercent), 0.1);
         assertEquals(507.88, substats.get(Stat.FlatHP), 0.1);

@@ -13,8 +13,11 @@ import com.github.lambdv.utils.*;
  * Utility class that provides a factory method for getting weapons from a database.
  */
 public final class Weapons {
-    private static final Map<String, Weapon> cache = new HashMap<>(); //cache for weapons
+    private static volatile Map<String, Weapon> cache = Collections.synchronizedMap(new HashMap<String, Weapon>()); //cache for weapons
+    //private static final Map<String, Weapon> cache = Collections.synchronizedMap(new HashMap<String, Weapon>()); //cache for weapons
+
     private static final Path databasePath = Paths.get("").toAbsolutePath().resolve("src/resources/data/weapons.csv");
+    public enum WeaponFactory{ Instance; public Weapon get(String name){return Weapons.of(name);} }
     
     /**
      * Factory method for getting a weapon from the database
@@ -25,21 +28,10 @@ public final class Weapons {
      * @throws RuntimeException exception is leaked if weapon is not found: program should crash
      */
     public static Weapon of(String name) {
-        var normalizedName = StandardUtils.flattenName(name);
-        if(cache.containsKey(normalizedName))
-            return cache.get(normalizedName);
-        try {
-            return Files.lines(databasePath)
-                .parallel()
-                .skip(1)
-                .map(line -> line.split(", "))
-                .filter(line -> StandardUtils.flattenName(line[0]).equals(normalizedName))
-                .map(Weapons::parseWeapon)
-                .reduce ((a, b) -> { throw new RuntimeException("Multiple weapons found with name: " + name); })
-                .map(w -> { cache.put(normalizedName, w); return w; })
-                .orElseThrow(() -> new RuntimeException("Weapon not found in database"));
-        }
-        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
+        var flatName = StandardUtils.flattenName(name);
+        if(!cache.containsKey(flatName)) 
+            Weapons.cashe(flatName);
+        return cache.get(flatName);
     }
 
     /**
@@ -48,18 +40,52 @@ public final class Weapons {
      * @return
      * @throws RuntimeException exception is leaked if weapon is not found: program should crash
      */
-    public static Map<String, Weapon> of(String... names){
+    public static WeaponFactory of(String... names){
+        Weapons.cashe(names);
+        return WeaponFactory.Instance;
+    }
+
+    public static void cashe(String name){
+        var normalizedName = StandardUtils.flattenName(name);
+        if(cache.containsKey(normalizedName)) return;
+        try {
+            Files.lines(databasePath)
+                .skip(1)
+                .parallel()
+                .map(line -> line.split(", "))
+                .filter(line -> StandardUtils.flattenName(line[0]).equals(normalizedName))
+                .map(Weapons::parseWeapon)
+                .reduce ((x,y)->{throw new RuntimeException("Multiple weapons found with name: " + name);})
+                .map(w -> { cache.put(normalizedName, w); return w; } )
+                .orElseThrow(() -> new RuntimeException("Weapon not found in database"));
+        }
+        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
+    }
+
+    public static void cashe(String... names){
+        String[] namesToFind = Arrays.stream(names)
+            .map(StandardUtils::flattenName)
+            .filter(n -> !cache.containsKey(n))
+            .toArray(String[]::new);
+        if(namesToFind.length == 0) return;
+        if(Arrays.stream(namesToFind).distinct().count() != namesToFind.length)
+            throw new RuntimeException("Duplicate names found in list: " + Arrays.toString(namesToFind));
         try {   
             Files.lines(databasePath)
-                .parallel()
                 .skip(1)
+                .parallel()
                 .map(line -> line.split(", "))
-                .filter(line -> Arrays.stream(names).anyMatch(name -> StandardUtils.flattenName(line[0]).equals(StandardUtils.flattenName(name))))
+                .filter(line -> {
+                    var lineFlatName = StandardUtils.flattenName(line[0]);
+                    //final var c = Weapons.cache;
+                    //if(c.containsKey(lineFlatName)) 
+                        //throw new RuntimeException("Multiple weapons found with name: " + line[0] + "in db. Provide a more specific name.");
+                    return Arrays.stream(namesToFind).anyMatch(name -> lineFlatName.equals(name));
+                })
                 .map(Weapons::parseWeapon)
                 .forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
         }
         catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
-        return Collections.unmodifiableMap(cache);
     }
 
     public static void cacheAll(){

@@ -1,7 +1,9 @@
 package com.github.lambdv.core;
 import java.util.Map;
 
-
+/**
+ * Utility class for methods returing damage instance lambda objects
+ */
 public class DamageFormulas {
     public static DamageInstance DefaultATKFormula(int instances, double motionValue, StatTable buffs){  
         return (c) -> {
@@ -24,6 +26,9 @@ public class DamageFormulas {
     private DamageFormulas(){}
 }
 
+/**
+ * Utility class providing functions for genshin impact formulas
+ */
 class Formulas{
     public static double totalATK(StatTable c){
         return (c.get(Stat.BaseATK) * (1 + c.get(Stat.ATKPercent))) + c.get(Stat.FlatATK);
