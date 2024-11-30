@@ -10,41 +10,23 @@ import java.util.stream.Stream;
  * Builder pattern to construct substats for given artifact pieces
  */
 public class ArtifactBuilder implements StatTable{
-    Flower flower;
-    Feather feather;
-    Sands sands;
-    Goblet goblet;
-    Circlet circlet;
+    private Optional<Flower> flower;
+    private Optional<Feather> feather;
+    private Optional<Sands> sands;
+    private Optional<Goblet> goblet;
+    private Optional<Circlet> circlet;
+    record Roll(int rarity, Artifacts.RollQuality quality){}
+    private Map<Stat, List<Roll>> substatRolls; //current number of substat rolls
+    private Map<Stat, Integer> substatConstraints; //number of substat rolls for each stat type that are left
 
-    private record Roll(int rarity, Artifacts.RollQuality quality){}
-    Map<Stat, List<Roll>> substatRolls; //current number of substat rolls
-
-    Map<Stat, Integer> substatConstraints; //number of substat rolls for each stat type that are left
-
-    public Map<Stat, Double> stats(){
-        var stats = substats();
-        stats.merge(Stat.FlatHP, flower.statValue(), Double::sum);
-        stats.merge(Stat.FlatATK, feather.statValue(), Double::sum);
-        stats.merge(sands.statType(), sands.statValue(), Double::sum);
-        stats.merge(goblet.statType(), goblet.statValue(), Double::sum);
-        stats.merge(circlet.statType(), circlet.statValue(), Double::sum);
-        return stats;
-    }
-
-    /**
-     * Compute a map of stats from substat specification
-     * @return
-     */
-    public Map<Stat, Double> substats(){
+    public Map<Stat, Integer> rolls() {
         return substatRolls.entrySet().stream()
             .collect(Collectors.toMap( //return map<Stat, Double> from map<Stat, List<Roll>>
                 e -> e.getKey(), //keys stay the same
-                e -> e.getValue().stream() //values are computed from the list of rolls
-                        .mapToDouble(r -> Artifacts.getSubStatValue(r.rarity, e.getKey()) * r.quality.multiplier) 
-                        .sum()));
+                e -> e.getValue().stream().mapToInt(r -> 1) .sum()));
     }
 
-    public ArtifactBuilder(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
+    public ArtifactBuilder(Optional<Flower> flower, Optional<Feather> feather, Optional<Sands> sands, Optional<Goblet> goblet, Optional<Circlet> circlet){
         this.flower = flower;
         this.feather = feather;
         this.sands = sands;
@@ -57,6 +39,10 @@ public class ArtifactBuilder implements StatTable{
                 .mapToInt(Artifacts::maxRollsFor)
                 .sum()
         ));
+    }
+
+    public ArtifactBuilder(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
+        this(Optional.of(flower), Optional.of(feather), Optional.of(sands), Optional.of(goblet), Optional.of(circlet));
     }
 
     /**
@@ -87,7 +73,6 @@ public class ArtifactBuilder implements StatTable{
         return builder;
     }
 
-
     public static ArtifactBuilder KQMC(Stat sandsStat, Stat gobletStat, Stat circletStat){
         return KQMC(
             new Flower(ArtifactSet.empty(), 5, 20),
@@ -98,6 +83,38 @@ public class ArtifactBuilder implements StatTable{
         );
     }
 
+ 
+
+    public Map<Stat, Double> mainStats(){
+        return artifacts().collect(Collectors.toMap(Artifact::statType, Artifact::statValue));
+    }
+
+    public Map<Stat, Double> substats(){
+        return substatRolls.entrySet().stream()
+            .collect(Collectors.toMap( //return map<Stat, Double> from map<Stat, List<Roll>>
+                e -> e.getKey(), //keys stay the same
+                e -> e.getValue().stream() //values are computed from the list of rolls
+                        .mapToDouble(r -> Artifacts.getSubStatValue(r.rarity, e.getKey()) * r.quality.multiplier) 
+                        .sum()));
+    }
+
+    public Map<Stat, Double> stats(){
+        return StatTables.merge(mainStats(), substats()).stats();
+    }
+
+    public Optional<Flower> flower(){ return flower; }
+    public Optional<Feather> feather(){ return feather; }
+    public Optional<Sands> sands(){ return sands; }
+    public Optional<Goblet> goblet(){ return goblet; }
+    public Optional<Circlet> circlet(){ return circlet; }
+
+    
+    Stream<Artifact> artifacts(){
+        return Stream.of(flower, feather, sands, goblet, circlet)
+            .filter(Optional::isPresent)
+            .map(Optional::get);
+    }
+
     /**
      * current number of substat rolls across all 5 artifacts
      * @return
@@ -106,9 +123,15 @@ public class ArtifactBuilder implements StatTable{
         return substatRolls.values().stream().mapToInt(List::size).sum();
     }
 
+    /**
+     * current number of substat rolls for a given substat
+     * @param substat
+     * @return
+     */
     public int numRolls(Stat substat){
         return substatRolls.get(substat).size();
     }
+
 
     /**
      * maximum number of rolls possible across all artifacts
@@ -130,6 +153,24 @@ public class ArtifactBuilder implements StatTable{
     }
 
     /**
+     * number of rolls left to still distrubute for a given substat
+     * @param substat
+     * @return
+     */
+    public int substatConstraints(Stat substat){
+        return substatConstraints.get(substat);
+    }
+
+    /**
+     * number of rolls left to still distrubute for a given substat
+     * @param substat
+     * @return
+     */
+    public int numRollsLeft(Stat substat){
+        return substatConstraints.get(substat);
+    }
+
+    /**
      * Commit a roll into a substat
      * @param substat
      * @param multiplier
@@ -143,9 +184,42 @@ public class ArtifactBuilder implements StatTable{
         //substatRolls.merge(substat, 1, Integer::sum);
         //substatMultipliers.merge(substat, quality.multiplier, Double::sum);
     }
-    
 
-    private static Stream<Stat> possibleSubStats(){
+    /**
+     * Commit num roll into a substat
+     * @param substat
+     * @param multiplier
+     */
+    public void roll(Stat substat, Artifacts.RollQuality quality, int num){
+        assert numRollsLeft() > 0 : "No more rolls left to distribute";
+        assert substatConstraints.get(substat) > 0 : "No more rolls left for " + substat;
+        substatConstraints.merge(substat, -1, Integer::sum);
+        Roll roll = new Roll(5, quality);
+        substatRolls.merge(substat, new ArrayList<>(List.of(roll)), (l1, l2)->{
+            for(int i = 0; i < num; i++) 
+                l1.add(roll); 
+        return l1;});
+        //substatRolls.merge(substat, 1, Integer::sum);
+        //substatMultipliers.merge(substat, quality.multiplier, Double::sum);
+    }
+
+    public void unRoll(Stat substat){
+        //assert numRolls(substat) <= 0 : substat.toString() + " has no rolls";
+        assert !substatRolls.get(substat).isEmpty();
+        substatConstraints.merge(substat, 1, Integer::sum);
+        substatRolls.get(substat).removeLast();
+    }
+
+    // public void unRoll(Stat substat, Artifacts.RollQuality quality){
+    //     assert numRolls(substat) <= 0 : substat.toString() + " has no rolls";
+    //     substatConstraints.merge(substat, 1, Integer::sum);
+    //     substatRolls.get(substat).remove(substatRolls.get(substat).stream()
+    //         .filter(r -> r.quality.equals(quality))
+    //         .findFirst()
+    //         .orElseThrow(() -> new IllegalStateException(substat.toString() + " has no rolls of quality " + quality)));
+    // }
+    
+    public static Stream<Stat> possibleSubStats(){
         return List.of(
             Stat.HPPercent, 
             Stat.FlatHP,
@@ -160,6 +234,5 @@ public class ArtifactBuilder implements StatTable{
         ).stream();
     }
 
-    Stream<Artifact> artifacts(){return Stream.of(flower, feather, sands, goblet, circlet);}
 }
 

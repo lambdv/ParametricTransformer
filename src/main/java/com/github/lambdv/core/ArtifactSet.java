@@ -1,7 +1,6 @@
 package com.github.lambdv.core;
 import java.util.Map;
 
-
 public record ArtifactSet(
     String setName,
     Map<Stat, Double> twoPiece, Map<Stat,Double> fourPiece

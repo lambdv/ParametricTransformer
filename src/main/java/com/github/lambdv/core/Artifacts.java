@@ -1,4 +1,6 @@
 package com.github.lambdv.core;
+import java.util.Random;
+
 import org.json.JSONObject;
 
 import com.github.lambdv.utils.AssetManager;
@@ -21,7 +23,19 @@ public class Artifacts{
         if(type.equals(Stat.None)) return 0;
         if(!Artifacts.checkCorrectLevelForRarity(level, rarity)) throw new IllegalArgumentException("Invalid level for rarity");
         if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
-        return mainStatValues.getJSONObject(rarity+"star").getJSONArray(type.toString()).getDouble(level);
+        
+        String typeAsString = type.toString();
+        if(
+            type == Stat.PyroDMGBonus || 
+            type == Stat.HydroDMGBonus || 
+            type == Stat.AnemoDMGBonus ||
+            type == Stat.ElectroDMGBonus ||
+            type == Stat.DendroDMGBonus ||
+            type == Stat.CryoDMGBonus ||
+            type == Stat.GeoDMGBonus
+        ) 
+            typeAsString = "ElementalDMGPercent";
+        return mainStatValues.getJSONObject(rarity+"star").getJSONArray(typeAsString).getDouble(level);
     }
     public static double getSubStatValue(int rarity, Stat type){
         if(subStatValues.equals(null)) throw new RuntimeException("subStatValues is null");

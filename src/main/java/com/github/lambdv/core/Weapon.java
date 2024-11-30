@@ -1,5 +1,6 @@
 package com.github.lambdv.core;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ public record Weapon(
     double baseATK, 
     Stat mainStatType, 
     double mainStatAmount
-) implements Equippable {
+) implements StatTable {
     public Map<Stat, Double> stats(){
         return Map.of(
             Stat.BaseATK, baseATK,

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 
 
-public class DamageFormulaTest {
+public class FormulasTest {
     @Test public void testAvgCritMultiplier(){
         assertEquals(1, Formulas.AvgCritMultiplier(0, 0), 0.0001); //0 cr, cd does not matter
         assertEquals(1, Formulas.AvgCritMultiplier(0, 1.0), 0.0001); //0 cr with some cd

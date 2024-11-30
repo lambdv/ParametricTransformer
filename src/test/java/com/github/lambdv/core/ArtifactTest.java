@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import java.io.File;
 import java.nio.file.Files;
+import java.security.Timestamp;
 import java.util.Map;
 import java.util.concurrent.Flow;
 import java.util.function.BiFunction;
@@ -180,9 +181,13 @@ public class ArtifactTest {
         assertEquals(20, bob.numRollsLeft());
 
 
-        assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
-        assertEquals(8, bob.substatConstraints.get(Stat.ATKPercent));
-        assertEquals(8, bob.substatConstraints.get(Stat.CritRate));
+        // assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
+        // assertEquals(8, bob.substatConstraints.get(Stat.ATKPercent));
+        // assertEquals(8, bob.substatConstraints.get(Stat.CritRate));
+
+        assertEquals(10, bob.numRollsLeft(Stat.HPPercent));
+        assertEquals(8, bob.numRollsLeft(Stat.ATKPercent));
+        assertEquals(8, bob.numRollsLeft(Stat.CritRate));
     }
 
     @Test public void ArtifactBuilderRollingSubstats(){
@@ -192,12 +197,15 @@ public class ArtifactTest {
             Stat.CritRate
         );
 
-        assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
+        //assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
+        assertEquals(10, bob.numRollsLeft(Stat.HPPercent));
+
         assertEquals(20, bob.numRolls());
 
         for (int i = 1; i <= 10; i++){
             bob.roll(Stat.HPPercent, Artifacts.RollQuality.AVG);
-            assertEquals(9-i+1, bob.substatConstraints.get(Stat.HPPercent));
+            //assertEquals(9-i+1, bob.substatConstraints.get(Stat.HPPercent));
+            assertEquals(10-i, bob.numRollsLeft(Stat.HPPercent));
         }
         try{
             bob.roll(Stat.HPPercent, Artifacts.RollQuality.AVG);
@@ -205,7 +213,7 @@ public class ArtifactTest {
         }
         catch(AssertionError e){}
 
-        System.out.println(bob.substats());
+        //System.out.println(bob.substats());
         var substats = bob.substats();
         assertEquals(12, bob.numRolls(Stat.HPPercent));
         assertEquals(0.496, (Artifacts.getSubStatValue(5, Stat.HPPercent) * Artifacts.RollQuality.AVG.multiplier)/10, 1);
@@ -229,11 +237,77 @@ public class ArtifactTest {
             new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus),
             new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
         );
-
         //assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
         assertEquals(20, bob.maxRolls());
+    }
 
 
+    @Test public void BuffedStatTableCapturesArtifactBuilderRollStatUpdates(){
+        var bob = ArtifactBuilder.KQMC(Stat.ATKPercent, Stat.AnemoDMGBonus, Stat.CritDMG);
+        
+        var c = Characters.of("amber");
 
+        BuffedStatTable buffed = new BuffedStatTable(c, ()->bob.substats());
+
+        var before = buffed.get(Stat.ATKPercent);
+
+        bob.roll(Stat.ATKPercent, Artifacts.RollQuality.AVG);
+        bob.roll(Stat.ATKPercent, Artifacts.RollQuality.AVG);
+        bob.roll(Stat.ATKPercent, Artifacts.RollQuality.AVG);
+        bob.roll(Stat.ATKPercent, Artifacts.RollQuality.AVG);
+        bob.roll(Stat.ATKPercent, Artifacts.RollQuality.AVG);
+
+        var after = buffed.get(Stat.ATKPercent);
+
+        assert before != after;
+
+        //System.out.println(before);
+        //System.out.println(after);
+
+
+    }
+
+
+    @Test public void OptimizeSubStatFunctionTest(){
+        long start = System.currentTimeMillis();
+        StatTable subs = Optimizer.optimialArtifactSubStatDistrbution(
+            Characters.of("amber")
+                .equip(Weapons.of("slingshot"))
+                .equip(new Flower(5,20))
+                .equip(new Feather(5,20))
+                .equip(new Sands(5,20, Stat.ATKPercent))
+                .equip(new Goblet(5,20, Stat.PyroDMGBonus))
+                .equip(new Circlet(5,20, Stat.CritDMG)),
+            new Rotation()
+                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty())),
+            0
+        );
+        long end = System.currentTimeMillis();
+        System.out.println("Time taken: " + (end - start) + "ms");
+        //System.out.println(subs.ToString());
+        //assertEquals(0.20, subs.get(Stat.ATKPercent), 0.01); //2 rolls + 2 fixed
+        //assertEquals(0.40, subs.get(Stat.CritRate), 0.01); //10 rolls + 2 fixed
+        //assertEquals(0.662, subs.get(Stat.CritDMG), 0.01); //8 rolls + 2 fixed
+    }
+
+    @Test public void OptimizeFiveStarMainStatFunctionTest(){
+        Character c = Characters.of("amber").equip(Weapons.of("polarstar"));
+        long start = System.currentTimeMillis();
+        var bob = Optimizer.optimal5StarArtifactMainStats(
+            c,
+            new Rotation()
+                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty()))
+        );
+        long end = System.currentTimeMillis();
+        System.out.println("Time taken: " + (end - start) + "ms");
+        assert c.flower().isEmpty();
+        assert c.feather().isEmpty();
+        assert c.sands().isEmpty();
+        assert c.goblet().isEmpty();
+        assert c.circlet().isEmpty();
+    
+        //System.out.println(bob.sands().get().statType());
+        //System.out.println(bob.goblet().get().statType());
+        //System.out.println(bob.circlet().get().statType());
     }
 }

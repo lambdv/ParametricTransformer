@@ -14,7 +14,7 @@ import com.github.lambdv.utils.AssetManager;
 /**
  * Object that represents an artifact piece.
  */
-public sealed interface Artifact extends Equippable permits Flower, Feather, Sands, Goblet, Circlet {
+public sealed interface Artifact extends StatTable permits Flower, Feather, Sands, Goblet, Circlet {
     ArtifactSet set();
     int rarity();
     int level();

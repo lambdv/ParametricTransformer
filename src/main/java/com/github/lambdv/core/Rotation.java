@@ -1,5 +1,6 @@
 package com.github.lambdv.core;
 import java.util.*;
+import java.util.concurrent.StructuredTaskScope;
 import java.util.function.Function;
 
 /**
@@ -11,6 +12,12 @@ import java.util.function.Function;
 public class Rotation {
     StatTable target;
     Map<String, DamageInstance> instances;
+
+    public Rotation(){
+        this.target = StatTable.empty();
+        instances = new HashMap<>();
+    }
+
 
     public Rotation(StatTable target){
         this.target = target;

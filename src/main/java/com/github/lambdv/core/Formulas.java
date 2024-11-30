@@ -1,35 +1,10 @@
-package com.github.lambdv.core;
-import java.util.Map;
 
-/**
- * Utility class for methods returing damage instance lambda objects
- */
-public class DamageFormulas {
-    public static DamageInstance DefaultATKFormula(int instances, double motionValue, StatTable buffs){  
-        return (c) -> {
-            var total = StatTables.merge(c, buffs);
-            return Formulas.FullDamageFormula(
-                instances,
-                Formulas.totalATK(total),
-                motionValue,
-                1.0,
-                0.0,
-                Formulas.AvgCritMultiplier(total.get(Stat.CritRate), total.get(Stat.CritDMG)),
-                total.get(Stat.DMGBonus),
-                0.0,
-                Formulas.DefMultiplier(90, Enemy.KQMC(), 0.0, 0.0),
-                Formulas.ResMultiplier(Enemy.KQMC(), 0),
-                1.0   
-            );
-        };
-    }
-    private DamageFormulas(){}
-}
+package com.github.lambdv.core;
 
 /**
  * Utility class providing functions for genshin impact formulas
  */
-class Formulas{
+public class Formulas{
     public static double totalATK(StatTable c){
         return (c.get(Stat.BaseATK) * (1 + c.get(Stat.ATKPercent))) + c.get(Stat.FlatATK);
     }

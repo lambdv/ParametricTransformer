@@ -42,12 +42,26 @@ public enum Stat {
     SkillDMGBonus, 
     BurstDMGBonus, 
     HealingBonus,
-    None;
+    None,
+    
+    //hidden stats
+    ReactionBonus,
+    DefReduction,
+    DefIgnore,
+    PyroResistanceReduction,
+    HydroResistanceReduction,
+    ElectroResistanceReduction,
+    CryoResistanceReduction,
+    AnemoResistanceReduction,
+    GeoResistanceReduction,
+    DendroResistanceReduction,
+    PhysicalResistanceReduction,   
+    ;
 
     public static Stat parseStat(String typeName){
         return StatAdaptor.parseStat(typeName);
     }
-    
+
     private class StatAdaptor{
         public static Map<String, Stat> dictionary = new HashMap<>(Map.of(
             "cr", Stat.CritRate,
@@ -62,11 +76,9 @@ public enum Stat {
             "elementaldmg", Stat.ElementalDMGBonus
         ));
 
-        {
-            Arrays.stream(Stat.values())
-                .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
-            );
-        }
+        {Arrays.stream(Stat.values())
+            .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
+        );}
 
         public static Stat parseStat(String typeName){
             return Optional.ofNullable(

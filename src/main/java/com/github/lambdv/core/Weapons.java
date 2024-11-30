@@ -53,7 +53,9 @@ public final class Weapons {
                 .skip(1)
                 .parallel()
                 .map(line -> line.split(", "))
-                .filter(line -> StandardUtils.flattenName(line[0]).equals(normalizedName))
+                .filter(line -> StandardUtils.flattenName(line[0]).equals(normalizedName) 
+                    || Weapons.partialMatch(normalizedName, line[0]) //partial match
+                )
                 .map(Weapons::parseWeapon)
                 .reduce ((x,y)->{throw new RuntimeException("Multiple weapons found with name: " + name);})
                 .map(w -> { cache.put(normalizedName, w); return w; } )

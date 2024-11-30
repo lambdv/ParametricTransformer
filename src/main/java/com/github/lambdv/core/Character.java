@@ -1,16 +1,20 @@
 package com.github.lambdv.core;
+import java.lang.reflect.Array;
 import java.util.*;
+import com.github.lambdv.utils.DeepClone;
 
 import com.github.lambdv.core.Stat;
 import com.github.lambdv.core.Weapon;
+
 
 /**
  * Object representation of a Character's total stat table
  * @note is a composite of an immutable base stats, a weapon, artifacts and a mutable fluid stat table
  * @note is a generalization of the Builder pattern for constructing characters through Mutation
- * 
  */
 public class Character implements StatTable{
+    private static final long serialVersionUID = 1L;
+
     //character identity details
     public int level = 90;
     public String name;
@@ -25,38 +29,33 @@ public class Character implements StatTable{
     private Optional<Goblet> goblet = Optional.empty();
     private Optional<Circlet> circlet = Optional.empty();
 
-    //private Map<Stat, Double> substats
-    //private Map<Stat, Double> 2pcsetbonus
-    //private Map<Stat, Double> 4pcsetbonus
-
-    //public void equip(weapon)
-    //public void equip(artifact)
-    //public void optimize(visitor, rotation)
+    Map<Stat, Double> substats;
+    Map<Stat, Double> artifactSet2Piece;
+    Map<Stat, Double> artifactSet4Piece;
     
- 
     public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
         this.name = name;
         this.ascensionStatType = ascensionStatType;
-        baseStats = new HashMap<>(Map.of(
-            Stat.BaseHP, baseHP,
-            Stat.BaseATK, baseATK,
-            Stat.BaseDEF, baseDEF,
-            Stat.EnergyRecharge, 1.00,
-            Stat.CritRate, 0.05,
-            Stat.CritDMG, 0.50
-        ));
+        baseStats = new HashMap<>();
+        baseStats.put(Stat.BaseHP, baseHP);
+        baseStats.put(Stat.BaseATK, baseATK);
+        baseStats.put(Stat.BaseDEF, baseDEF);
+        baseStats.put(Stat.EnergyRecharge, 1.00);
+        baseStats.put(Stat.CritRate, 0.05);
+        baseStats.put(Stat.CritDMG, 0.50);
         baseStats.merge(ascensionStatType, ascensionStatAmount, Double::sum);
         fluidStats = new HashMap<>();
+        substats = new HashMap<>();
+        artifactSet2Piece = new HashMap<>();
+        artifactSet4Piece = new HashMap<>();
     }
 
     public Character add(Stat type, double amount){
-        fluidStats.merge(type, amount, Double::sum);
-        return this;
+        fluidStats.merge(type, amount, Double::sum); return this;
     }
 
     public Character add(StatTable stats){
-        stats.stats().forEach(this::add);
-        return this;
+        stats.stats().forEach(this::add); return this;
     }
     
     @Override public double get(Stat type){
@@ -67,26 +66,25 @@ public class Character implements StatTable{
             + feather.map(f -> f.get(type)).orElse(0.0)
             + sands.map(s -> s.get(type)).orElse(0.0)
             + goblet.map(g -> g.get(type)).orElse(0.0)
-            + circlet.map(c -> c.get(type)).orElse(0.0);
+            + circlet.map(c -> c.get(type)).orElse(0.0)
+            + substats.getOrDefault(type, 0.0)
+            + artifactSet2Piece.getOrDefault(type, 0.0)
+            + artifactSet4Piece.getOrDefault(type, 0.0)
+        ;
     }
-    
 
     public Character equip(Weapon weapon){
-        this.weapon = Optional.of(weapon);
-        return this;
+        this.weapon = Optional.of(weapon); return this;
     }
 
     public Character equip(Artifact artifact){
-        //pattern matching
         switch (artifact) {
             case Flower flower -> this.flower = Optional.of(flower);
             case Feather feather -> this.feather = Optional.of(feather);
             case Sands sands -> this.sands = Optional.of(sands);
             case Goblet goblet -> this.goblet = Optional.of(goblet);
             case Circlet circlet -> this.circlet = Optional.of(circlet);
-            default -> throw new IllegalArgumentException("Unknown artifact type: " + artifact.getClass().getName());
-        }
-        return this;
+        } return this;
     }
 
     public Optional<Weapon> weapon(){return weapon;}
@@ -102,13 +100,33 @@ public class Character implements StatTable{
     public void unequipSands(){sands = Optional.empty();}
     public void unequipGoblet(){goblet = Optional.empty();}
     public void unequipCirclet(){circlet = Optional.empty();}
+    public void unequipAllArtifacts(){
+        unequipFlower();
+        unequipFeather();
+        unequipSands();
+        unequipGoblet();
+        unequipCirclet();
+    }
 
 
     public Map<Stat, Double> stats(){
-        return Arrays.stream(Stat.values())
-            .filter(stat -> get(stat) != 0.0)
-            .map(stat -> Map.entry(stat, get(stat)))
-            .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
+        // return Arrays.stream(Stat.values())
+        //     .filter(stat -> get(stat) != 0.0)
+        //     .map(stat -> Map.entry(stat, get(stat)))
+        //     .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
+
+        return StatTables.merge(
+            baseStats, 
+            fluidStats, 
+            substats,
+            artifactSet2Piece,
+            artifactSet4Piece,
+            weapon.map(Weapon::stats).orElse(Map.of()), 
+            flower.map(Flower::stats).orElse(Map.of()), 
+            feather.map(Feather::stats).orElse(Map.of()), 
+            sands.map(Sands::stats).orElse(Map.of()), goblet.map(Goblet::stats).orElse(Map.of()), 
+            circlet.map(Circlet::stats).orElse(Map.of()))
+            .stats();
 }
 
     @Override public String toString(){
@@ -117,4 +135,19 @@ public class Character implements StatTable{
             + "\nFluid Stats: " + fluidStats
             + "\nWeapon: " + weapon;
     }
+
+    public Character clone(){
+        Character clone = new Character(name, baseStats.get(Stat.BaseHP), baseStats.get(Stat.BaseATK), baseStats.get(Stat.BaseDEF), ascensionStatType, baseStats.get(ascensionStatType));
+
+        this.weapon.ifPresent(w -> clone.equip(w));
+        this.flower.ifPresent(f -> clone.equip(f));
+        this.feather.ifPresent(f -> clone.equip(f));
+        this.sands.ifPresent(s -> clone.equip(s));
+        this.goblet.ifPresent(g -> clone.equip(g));
+        this.circlet.ifPresent(c -> clone.equip(c));
+        Arrays.stream(Stat.values()).forEach(stat -> clone.add(stat, get(stat)));
+
+        return clone;
+    }
 }
+
