@@ -102,6 +102,14 @@ public final class Weapons {
         catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
     }
 
+    public static boolean isCached(String name){
+        return cache.containsKey(StandardUtils.flattenName(name));
+    }
+
+    public static boolean isCached(Weapon weapon){
+        return isCached(weapon.name()) && cache.values().stream().anyMatch(w -> w.equals(weapon));
+    }
+
     private static Weapon parseWeapon(String[] data){
         return new Weapon(
             data[0], //weapon name

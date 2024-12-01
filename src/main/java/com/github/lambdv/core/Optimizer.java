@@ -41,11 +41,12 @@ public class Optimizer {
         return ()->bob.substats();
     }
 
-    public static ArtifactBuilder optimal5StarArtifactMainStats(final Character c, final Rotation r){
+    public static ArtifactBuilder optimal5StarArtifactMainStats(final Character c, final Rotation r, double energyRechargeRequirements){
         Character copy = c.clone();
+        copy.unequipAllArtifacts();
         Flower bestFlower = new Flower(5, 20);
         Feather bestFeather = new Feather(5, 20);
-        Sands bestSands = new Sands(5, 20, Stat.ATKPercent);
+        Sands bestSands = new Sands(5, 20, Stat.EnergyRecharge);
         Goblet bestGoblet = new Goblet(5, 20, Stat.ATKPercent);
         Circlet bestCirclet = new Circlet(5, 20, Stat.ATKPercent);
 
@@ -73,17 +74,76 @@ public class Optimizer {
         copy.equip(bestSands);
         copy.equip(bestGoblet);
         copy.equip(bestCirclet);
-        return new ArtifactBuilder(copy.flower().get(), copy.feather().get(), copy.sands().get(), copy.goblet().get(), copy.circlet().get());
+        //return new ArtifactBuilder(copy.flower().get(), copy.feather().get(), copy.sands().get(), copy.goblet().get(), copy.circlet().get());
+        return new ArtifactBuilder();
     }
+
+    public static ArtifactBuilder optimalArtifacts(final Character c, final Rotation r, double energyRechargeRequirements){
+        
+        
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
 }   
 
 
 
 
 
-// /**
-//  * Visitor object that provides operations/algorithms to optimize a character's stats and gear distribution for a given rotation.
-//  */
-// interface Visitor {
-//     void visit(Character c);
-// }
+/**
+ * Visitor object that provides operations/algorithms to optimize a character's stats and gear distribution for a given rotation.
+ */
+interface Visitor<T> {
+    T visitCharacter(Character c);
+    T visitWeapon(Weapon w);
+    T visitArtifact(Artifact a);
+}
+
+class CloneVisitor implements Visitor<StatTable> {
+    public Character visitCharacter(Character c){
+        return c.clone();
+    }
+    public Weapon visitWeapon(Weapon w){
+        if(Weapons.isCached(w)) 
+            return Weapons.of(w.name());
+        return new Weapon(
+            w.name(),
+            w.rarity(),
+            w.level(),
+            w.refinement(),
+            w.baseATK(),
+            w.mainStatType(),
+            w.mainStatAmount()
+        );
+    }
+    public Character visitArtifact(Artifact a){
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+}
+
+class KQMCArtifactMainAndSubs implements Visitor<ArtifactBuilder> {
+    private final Rotation r;
+    private final double energyRechargeRequirements;
+
+    public KQMCArtifactMainAndSubs(Rotation r, double energyRechargeRequirements){
+        this.r = r;
+        this.energyRechargeRequirements = energyRechargeRequirements;
+    }
+
+    public ArtifactBuilder visitCharacter(Character c){
+        var subs = Optimizer.optimialArtifactSubStatDistrbution(c, r, energyRechargeRequirements);
+        var mains = Optimizer.optimal5StarArtifactMainStats(c, r, energyRechargeRequirements);
+        c.add(subs);
+        c.add(mains);
+        if(1 != 100) throw new AssertionError("This is a test");
+        return mains;
+    }
+
+    public ArtifactBuilder visitWeapon(Weapon w){
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public ArtifactBuilder visitArtifact(Artifact a){
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+}

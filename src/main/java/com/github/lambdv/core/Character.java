@@ -1,6 +1,8 @@
 package com.github.lambdv.core;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.Function;
+
 import com.github.lambdv.utils.DeepClone;
 
 import com.github.lambdv.core.Stat;
@@ -22,6 +24,7 @@ public class Character implements StatTable{
     //composite stat tables
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
+    private Map<Stat, List<Function<StatTable, Double>>> dynamicFluidStats;
     private Optional<Weapon> weapon = Optional.empty();
     private Optional<Flower> flower = Optional.empty();
     private Optional<Feather> feather = Optional.empty();
@@ -32,19 +35,24 @@ public class Character implements StatTable{
     Map<Stat, Double> substats;
     Map<Stat, Double> artifactSet2Piece;
     Map<Stat, Double> artifactSet4Piece;
+
+
     
     public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
         this.name = name;
         this.ascensionStatType = ascensionStatType;
-        baseStats = new HashMap<>();
-        baseStats.put(Stat.BaseHP, baseHP);
-        baseStats.put(Stat.BaseATK, baseATK);
-        baseStats.put(Stat.BaseDEF, baseDEF);
-        baseStats.put(Stat.EnergyRecharge, 1.00);
-        baseStats.put(Stat.CritRate, 0.05);
-        baseStats.put(Stat.CritDMG, 0.50);
+        baseStats = new HashMap<>(Map.of(
+            Stat.BaseHP, baseHP,
+            Stat.BaseATK, baseATK,
+            Stat.BaseDEF, baseDEF,
+            Stat.CritRate, 0.05,
+            Stat.CritDMG, 0.5,
+            Stat.EnergyRecharge, 0.0
+        ));
         baseStats.merge(ascensionStatType, ascensionStatAmount, Double::sum);
         fluidStats = new HashMap<>();
+        dynamicFluidStats = new HashMap<>();
+
         substats = new HashMap<>();
         artifactSet2Piece = new HashMap<>();
         artifactSet4Piece = new HashMap<>();
@@ -56,6 +64,21 @@ public class Character implements StatTable{
 
     public Character add(StatTable stats){
         stats.stats().forEach(this::add); return this;
+    }
+
+    public Character add(Stat type, Function<StatTable, Double> dynamicAmount){
+        dynamicFluidStats.merge(type, List.of(dynamicAmount), (l1, l2) -> {
+            List<Function<StatTable, Double>> l = new ArrayList<>(l1);
+            l.addAll(l2); return l;
+        }); return this;
+    }
+
+    public double getDynamic(Stat type){
+        if(!dynamicFluidStats.containsKey(type)) 
+            return 0.0;
+        return dynamicFluidStats.get(type).stream()
+            .map(f -> f.apply(this))
+            .reduce(0.0, Double::sum);
     }
     
     @Override public double get(Stat type){
@@ -70,6 +93,7 @@ public class Character implements StatTable{
             + substats.getOrDefault(type, 0.0)
             + artifactSet2Piece.getOrDefault(type, 0.0)
             + artifactSet4Piece.getOrDefault(type, 0.0)
+            + getDynamic(type)
         ;
     }
 
@@ -87,12 +111,6 @@ public class Character implements StatTable{
         } return this;
     }
 
-    public Optional<Weapon> weapon(){return weapon;}
-    public Optional<Flower> flower(){return flower;}
-    public Optional<Feather> feather(){return feather;}
-    public Optional<Sands> sands(){return sands;}
-    public Optional<Goblet> goblet(){return goblet;}
-    public Optional<Circlet> circlet(){return circlet;}
 
     public void unequipWeapon(){weapon = Optional.empty();}
     public void unequipFlower(){flower = Optional.empty();}
@@ -101,33 +119,27 @@ public class Character implements StatTable{
     public void unequipGoblet(){goblet = Optional.empty();}
     public void unequipCirclet(){circlet = Optional.empty();}
     public void unequipAllArtifacts(){
-        unequipFlower();
-        unequipFeather();
-        unequipSands();
-        unequipGoblet();
-        unequipCirclet();
+        flower = Optional.empty();
+        feather = Optional.empty();
+        sands = Optional.empty();
+        goblet = Optional.empty();
+        circlet = Optional.empty();
     }
+
+    public Optional<Weapon> weapon(){return weapon;}
+    public Optional<Flower> flower(){return flower;}
+    public Optional<Feather> feather(){return feather;}
+    public Optional<Sands> sands(){return sands;}
+    public Optional<Goblet> goblet(){return goblet;}
+    public Optional<Circlet> circlet(){return circlet;}
 
 
     public Map<Stat, Double> stats(){
-        // return Arrays.stream(Stat.values())
-        //     .filter(stat -> get(stat) != 0.0)
-        //     .map(stat -> Map.entry(stat, get(stat)))
-        //     .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
-
-        return StatTables.merge(
-            baseStats, 
-            fluidStats, 
-            substats,
-            artifactSet2Piece,
-            artifactSet4Piece,
-            weapon.map(Weapon::stats).orElse(Map.of()), 
-            flower.map(Flower::stats).orElse(Map.of()), 
-            feather.map(Feather::stats).orElse(Map.of()), 
-            sands.map(Sands::stats).orElse(Map.of()), goblet.map(Goblet::stats).orElse(Map.of()), 
-            circlet.map(Circlet::stats).orElse(Map.of()))
-            .stats();
-}
+        return Arrays.stream(Stat.values())
+            .filter(s -> get(s) != 0.0)
+            .map(s -> Map.entry(s, get(s)))
+            .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
+    }
 
     @Override public String toString(){
         return name
@@ -138,7 +150,6 @@ public class Character implements StatTable{
 
     public Character clone(){
         Character clone = new Character(name, baseStats.get(Stat.BaseHP), baseStats.get(Stat.BaseATK), baseStats.get(Stat.BaseDEF), ascensionStatType, baseStats.get(ascensionStatType));
-
         this.weapon.ifPresent(w -> clone.equip(w));
         this.flower.ifPresent(f -> clone.equip(f));
         this.feather.ifPresent(f -> clone.equip(f));
@@ -146,8 +157,11 @@ public class Character implements StatTable{
         this.goblet.ifPresent(g -> clone.equip(g));
         this.circlet.ifPresent(c -> clone.equip(c));
         Arrays.stream(Stat.values()).forEach(stat -> clone.add(stat, get(stat)));
-
         return clone;
+    }
+
+    public <T> T accept(Visitor<T> visitor){
+        return visitor.visitCharacter(this);
     }
 }
 

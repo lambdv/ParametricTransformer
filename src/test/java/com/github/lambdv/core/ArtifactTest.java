@@ -88,18 +88,6 @@ public class ArtifactTest {
         
     }
 
-    // @Test public void SubstatFunctionality(){
-    //     Artifact flower = new Artifact(Artifact.ArtifactType.FLOWER, 20, 5, Stat.FlatHP, new ArtifactSetBonus(Map.of(), Map.of()));
-    //     SubStats flowerSUbs = new SubStats(flower, 
-    //         Stat.FlatATK, Artifacts.RollQuality.AVG.multiplier,  
-    //         Stat.FlatDEF,  Artifacts.RollQuality.AVG.multiplier,
-    //         Stat.HPPercent, Artifacts.RollQuality.AVG.multiplier,
-    //         Stat.ATKPercent, Artifacts.RollQuality.AVG.multiplier
-    //     );
-    //     flower.set(flowerSUbs);
-        
-    // }
-
 
     @Test public void TestMaxRollsForMethod(){
         ArtifactBuilder bob = ArtifactBuilder.KQMC(
@@ -247,7 +235,7 @@ public class ArtifactTest {
         
         var c = Characters.of("amber");
 
-        BuffedStatTable buffed = new BuffedStatTable(c, ()->bob.substats());
+        BuffedStatTable buffed = BuffedStatTable.of(c, bob);
 
         var before = buffed.get(Stat.ATKPercent);
 
@@ -283,7 +271,7 @@ public class ArtifactTest {
             0
         );
         long end = System.currentTimeMillis();
-        System.out.println("Time taken: " + (end - start) + "ms");
+        //System.out.println("Time taken: " + (end - start) + "ms");
         //System.out.println(subs.ToString());
         //assertEquals(0.20, subs.get(Stat.ATKPercent), 0.01); //2 rolls + 2 fixed
         //assertEquals(0.40, subs.get(Stat.CritRate), 0.01); //10 rolls + 2 fixed
@@ -296,10 +284,11 @@ public class ArtifactTest {
         var bob = Optimizer.optimal5StarArtifactMainStats(
             c,
             new Rotation()
-                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty()))
+                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty())),
+            0
         );
         long end = System.currentTimeMillis();
-        System.out.println("Time taken: " + (end - start) + "ms");
+        //System.out.println("Time taken: " + (end - start) + "ms");
         assert c.flower().isEmpty();
         assert c.feather().isEmpty();
         assert c.sands().isEmpty();

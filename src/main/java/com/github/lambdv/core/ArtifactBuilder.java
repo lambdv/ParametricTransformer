@@ -19,12 +19,7 @@ public class ArtifactBuilder implements StatTable{
     private Map<Stat, List<Roll>> substatRolls; //current number of substat rolls
     private Map<Stat, Integer> substatConstraints; //number of substat rolls for each stat type that are left
 
-    public Map<Stat, Integer> rolls() {
-        return substatRolls.entrySet().stream()
-            .collect(Collectors.toMap( //return map<Stat, Double> from map<Stat, List<Roll>>
-                e -> e.getKey(), //keys stay the same
-                e -> e.getValue().stream().mapToInt(r -> 1) .sum()));
-    }
+
 
     public ArtifactBuilder(Optional<Flower> flower, Optional<Feather> feather, Optional<Sands> sands, Optional<Goblet> goblet, Optional<Circlet> circlet){
         this.flower = flower;
@@ -43,6 +38,10 @@ public class ArtifactBuilder implements StatTable{
 
     public ArtifactBuilder(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
         this(Optional.of(flower), Optional.of(feather), Optional.of(sands), Optional.of(goblet), Optional.of(circlet));
+    }
+
+    public ArtifactBuilder(){
+        this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     /**
@@ -99,16 +98,10 @@ public class ArtifactBuilder implements StatTable{
     }
 
     public Map<Stat, Double> stats(){
-        return StatTables.merge(mainStats(), substats()).stats();
+        return Stream.concat(mainStats().entrySet().stream(), substats().entrySet().stream())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum));
     }
 
-    public Optional<Flower> flower(){ return flower; }
-    public Optional<Feather> feather(){ return feather; }
-    public Optional<Sands> sands(){ return sands; }
-    public Optional<Goblet> goblet(){ return goblet; }
-    public Optional<Circlet> circlet(){ return circlet; }
-
-    
     Stream<Artifact> artifacts(){
         return Stream.of(flower, feather, sands, goblet, circlet)
             .filter(Optional::isPresent)
@@ -130,6 +123,17 @@ public class ArtifactBuilder implements StatTable{
      */
     public int numRolls(Stat substat){
         return substatRolls.get(substat).size();
+    }
+
+    /**
+     * current number of substat rolls for each substat
+     * @return
+     */
+    public Map<Stat, Integer> rolls() {
+        return substatRolls.entrySet().stream()
+            .collect(Collectors.toMap( //return map<Stat, Double> from map<Stat, List<Roll>>
+                e -> e.getKey(), //keys stay the same
+                e -> e.getValue().stream().mapToInt(r -> 1) .sum()));
     }
 
 
@@ -218,6 +222,47 @@ public class ArtifactBuilder implements StatTable{
     //         .findFirst()
     //         .orElseThrow(() -> new IllegalStateException(substat.toString() + " has no rolls of quality " + quality)));
     // }
+
+    public Optional<Flower> flower(){ return flower; }
+    public Optional<Feather> feather(){ return feather; }
+    public Optional<Sands> sands(){ return sands; }
+    public Optional<Goblet> goblet(){ return goblet; }
+    public Optional<Circlet> circlet(){ return circlet; }
+
+    public ArtifactBuilder equip(Artifact artifact){ 
+        switch (artifact) {
+            case Flower flower -> this.flower = Optional.of(flower);
+            case Feather feather -> this.feather = Optional.of(feather);
+            case Sands sands -> this.sands = Optional.of(sands);
+            case Goblet goblet -> this.goblet = Optional.of(goblet);
+            case Circlet circlet -> this.circlet = Optional.of(circlet);
+        } return this;
+    }
+
+    public void unequipFlower(){ this.flower = Optional.empty(); }
+    public void unequipFeather(){ this.feather = Optional.empty(); }
+    public void unequipSands(){ this.sands = Optional.empty(); }
+    public void unequipGoblet(){ this.goblet = Optional.empty(); }
+    public void unequipCirclet(){ this.circlet = Optional.empty(); }
+    public void unequipAll(){
+        flower = Optional.empty();
+        feather = Optional.empty();
+        sands = Optional.empty();
+        goblet = Optional.empty();
+        circlet = Optional.empty();
+    }
+
+
+    public void clear(){
+        flower = Optional.empty();
+        feather = Optional.empty();
+        sands = Optional.empty();
+        goblet = Optional.empty();
+        circlet = Optional.empty();
+        substatRolls.clear();
+        substatConstraints.clear();
+    }
+    
     
     public static Stream<Stat> possibleSubStats(){
         return List.of(
