@@ -299,4 +299,16 @@ public class ArtifactTest {
         //System.out.println(bob.goblet().get().statType());
         //System.out.println(bob.circlet().get().statType());
     }
+
+    @Test public void ArtifactBuilderCorrectValuesForFourStarSubstat(){
+
+        var bob = ArtifactBuilder.KQMC(
+            new Flower(ArtifactSet.empty(), 4, 16),
+            new Feather(ArtifactSet.empty(), 4, 16),
+            new Sands(ArtifactSet.empty(), 4, 16, Stat.ATKPercent),
+            new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus),
+            new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
+        );
+        
+    }
 }

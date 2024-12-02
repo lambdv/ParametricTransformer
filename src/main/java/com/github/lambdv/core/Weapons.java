@@ -51,7 +51,7 @@ public final class Weapons {
         try {
             Files.lines(databasePath)
                 .skip(1)
-                .parallel()
+                //.parallel()
                 .map(line -> line.split(", "))
                 .filter(line -> StandardUtils.flattenName(line[0]).equals(normalizedName) 
                     || Weapons.partialMatch(normalizedName, line[0]) //partial match
@@ -97,8 +97,9 @@ public final class Weapons {
                 .skip(1)
                 .map(line -> line.split(", "))
                 .map(Weapons::parseWeapon)
-                .forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
-        }
+                //.forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
+                ;
+            }
         catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
     }
 

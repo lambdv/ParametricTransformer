@@ -13,7 +13,10 @@ public class WeaponTest {
     * Weapons.of() Factory Method can create Weapon object from CSV database with a given name
     */
     @Test public void ofMethodWeaponObjectFromCSV(){
+        //var startTime = System.nanoTime();
         var w = Weapons.of("Ibis Piercer"); //get weapon from database
+        //var endTime = System.nanoTime();
+        //System.out.println((endTime - startTime) + "ns");
         //check values are correct
         assertTrue(w.name().equals("Ibis Piercer"));
         assertTrue(w.baseATK() == 565);
@@ -22,6 +25,22 @@ public class WeaponTest {
 
         try{ Weapons.of("Not a weapon"); assert false; } 
         catch (RuntimeException e){}
+    }
+
+    @Test public void ofMethodWeaponObjectFromCSV2(){
+        var startTime = System.nanoTime();
+        Weapons.cacheAll();
+        var w = Weapons.of("Ibis Piercer"); //get weapon from database
+        var endTime = System.nanoTime();
+        System.out.println((endTime - startTime) / 1_000_000_000.0 + " seconds");
+        //check values are correct
+        assertTrue(w.name().equals("Ibis Piercer"));
+        // assertTrue(w.baseATK() == 565);
+        // assertTrue(w.mainStatType().equals(Stat.ATKPercent));
+        // assertTrue(w.mainStatAmount() == 0.276);
+
+        // try{ Weapons.of("Not a weapon"); assert false; } 
+        // catch (RuntimeException e){}
     }
 
     /**

@@ -23,9 +23,9 @@ public class CharacterTest {
         Character c = Characters.of("Diluc");
         //System.out.println(c);
         assertEquals("Diluc", c.name);
-        assertEquals(14268, c.get(Stat.BaseHP), 0);
-        assertEquals(415, c.get(Stat.BaseATK), 0);
-        assertEquals(876, c.get(Stat.BaseDEF), 0);
+        assertEquals(12981, c.get(Stat.BaseHP), 0);
+        assertEquals(335, c.get(Stat.BaseATK), 0);
+        assertEquals(784, c.get(Stat.BaseDEF), 0);
         assertEquals(Stat.CritRate, c.ascensionStatType);
         assertEquals(0.192+0.05, c.get(Stat.CritRate), 0);
         assertEquals(0.5, c.get(Stat.CritDMG), 0);
@@ -67,17 +67,13 @@ public class CharacterTest {
     @Test public void dynamicFluidStats(){
         Character c = Characters.of("hutao");
         assertEquals(0.884, c.get(Stat.CritDMG), 0.00001);
-
-
         assertEquals(15552, c.get(Stat.BaseHP), 0.00001);
         assertEquals(106.43, c.get(Stat.BaseATK), 0.00001);
         assertEquals(0.05, c.get(Stat.CritRate), 0.00001);
         assertEquals(0.884, c.get(Stat.CritDMG), 0.00001);
         assertEquals(0.0, c.get(Stat.EnergyRecharge), 0.00001);
         assertEquals(0.0, c.get(Stat.ElementalDMGBonus), 0.00001);
-
         //assertEquals(106, Formulas.totalATK(c), 0.00001);
-
         var rot = new Rotation()
             .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
         var before = rot.compute(c);

@@ -28,17 +28,29 @@ public sealed interface Artifact extends StatTable permits Flower, Feather, Sand
     }
 }
 
+/**
+ * Object that represents a flower artifact piece and specifies the rarity and level.
+ * mainstat is always assumed to be flat HP.
+ */
 record Flower(ArtifactSet set, int rarity, int level) implements Artifact{
     public Flower{ assert Artifacts.checkCorrectLevelForRarity(level, rarity); }
     public Flower(int rarity , int level){ this(ArtifactSet.empty(), rarity, level); }
     public Stat statType(){return Stat.FlatHP;}
 }
+
+/**
+ * Object that represents a feather artifact piece and specifies the rarity and level.
+ * mainstat is always assumed to be flat ATK.
+ */
 record Feather(ArtifactSet set, int rarity, int level) implements Artifact{
     public Feather{ assert Artifacts.checkCorrectLevelForRarity(level, rarity); }
     public Feather(int rarity , int level){ this(ArtifactSet.empty(), rarity, level); }
     public Stat statType(){return Stat.FlatATK;}
 }
 
+/**
+ * Object that represents a sands artifact piece and specifies the rarity, level, and stat type.
+ */
 record Sands(ArtifactSet set, int rarity, int level, Stat statType) implements Artifact{
     public Sands{
         assert Artifacts.checkCorrectLevelForRarity(level, rarity);
@@ -58,6 +70,9 @@ record Sands(ArtifactSet set, int rarity, int level, Stat statType) implements A
     }
 }
 
+/**
+ * Object that represents a goblet artifact piece and specifies the rarity, level, and stat type.
+ */
 record Goblet(ArtifactSet set, int rarity, int level, Stat statType) implements Artifact{
     public Goblet{
         assert Artifacts.checkCorrectLevelForRarity(level, rarity);
@@ -86,6 +101,10 @@ record Goblet(ArtifactSet set, int rarity, int level, Stat statType) implements 
         );
     }
 }
+
+/**
+ * Object that represents a circlet artifact piece and specifies the rarity, level, and stat type.
+ */
 record Circlet(ArtifactSet set, int rarity, int level, Stat statType) implements Artifact {
     public Circlet {
         assert Artifacts.checkCorrectLevelForRarity(level, rarity);

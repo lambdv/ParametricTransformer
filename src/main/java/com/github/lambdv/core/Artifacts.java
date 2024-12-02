@@ -10,37 +10,32 @@ import com.github.lambdv.utils.AssetManager;
 public class Artifacts{
     private static final JSONObject mainStatValues;
     private static final JSONObject subStatValues;
-    private Artifacts(){}
     static {
         try{
             mainStatValues = AssetManager.getJSONResource("artifactMainStats.json");
             subStatValues = AssetManager.getJSONResource("artifactSubStats.json");
+        } 
+        catch(Throwable t){
+            throw new Error("Artifacts util class could not initialize main and substat values from json db: " + t);
         }
-        catch(Throwable t){throw new RuntimeException(t);}
     }
     public static double getMainStatValue(int rarity, int level, Stat type){
-        if(mainStatValues.equals(null)) throw new RuntimeException("mainStatValues is null");
-        if(type.equals(Stat.None)) return 0;
-        if(!Artifacts.checkCorrectLevelForRarity(level, rarity)) throw new IllegalArgumentException("Invalid level for rarity");
-        if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
+        assert type != null;
+        assert type != Stat.None;
+        if(!Artifacts.checkCorrectLevelForRarity(level, rarity)) 
+            throw new IllegalArgumentException("Invalid level for rarity");
+        if(rarity < 1 || rarity > 5) 
+            throw new IllegalArgumentException("Rarity must be between 1 and 5");
         
-        String typeAsString = type.toString();
-        if(
-            type == Stat.PyroDMGBonus || 
-            type == Stat.HydroDMGBonus || 
-            type == Stat.AnemoDMGBonus ||
-            type == Stat.ElectroDMGBonus ||
-            type == Stat.DendroDMGBonus ||
-            type == Stat.CryoDMGBonus ||
-            type == Stat.GeoDMGBonus
-        ) 
-            typeAsString = "ElementalDMGPercent";
+        String typeAsString = type.isElementalDMGBonus() ? "ElementalDMGPercent" : type.toString();
         return mainStatValues.getJSONObject(rarity+"star").getJSONArray(typeAsString).getDouble(level);
     }
     public static double getSubStatValue(int rarity, Stat type){
-        if(subStatValues.equals(null)) throw new RuntimeException("subStatValues is null");
-        if (type.equals(Stat.None)) return 0;
-        if(rarity < 1 || rarity > 5) throw new IllegalArgumentException("Rarity must be between 1 and 5");
+        assert type != null;
+        assert type != Stat.None;
+        if(rarity < 1 || rarity > 5) 
+            throw new IllegalArgumentException("Rarity must be between 1 and 5");
+
         return subStatValues.getJSONObject(rarity+"star").getDouble(type.toString());
     }
 
@@ -72,7 +67,6 @@ public class Artifacts{
         MID(0.8),
         LOW(0.7),
         AVG((1+0.9+0.8+0.7)/4); //this is what KQMC uses
-        //4-star artifacts if used have a x0.8 stat modifier, and a penalty of -2 distributed substats per 4-star artifact
         double multiplier;
         RollQuality(double multiplier){ this.multiplier = multiplier; }
     };
@@ -86,4 +80,5 @@ public class Artifacts{
     public static int maxRollsFor(Artifact artifact) {
         return artifact.rarity()-1 + artifact.level()/4;
     }
+    private Artifacts(){}
 }

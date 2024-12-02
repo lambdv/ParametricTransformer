@@ -63,31 +63,39 @@ public enum Stat {
     }
 
     private class StatAdaptor{
-        public static Map<String, Stat> dictionary = new HashMap<>(Map.of(
-            "cr", Stat.CritRate,
-            "cd", Stat.CritDMG,
-            "em", Stat.ElementalMastery,
-            "er", Stat.EnergyRecharge,
-            "hp", Stat.HPPercent,
-            "atk", Stat.ATKPercent,
-            "def", Stat.DEFPercent,
-            "hb", Stat.HealingBonus,
-            "n", Stat.None,
-            "elementaldmg", Stat.ElementalDMGBonus
-        ));
-
-        {Arrays.stream(Stat.values())
-            .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
-        );}
-
+        public static Map<String, Stat> dictionary = new HashMap<>();
+        static {
+            Arrays.stream(Stat.values())
+                .forEach(stat -> dictionary.put(StandardUtils.flattenName(stat.toString()), stat)
+            );
+            dictionary.put("cr", Stat.CritRate);
+            dictionary.put("cd", Stat.CritDMG);
+            dictionary.put("em", Stat.ElementalMastery);
+            dictionary.put("er", Stat.EnergyRecharge);
+            dictionary.put("hp", Stat.HPPercent);
+            dictionary.put("atk", Stat.ATKPercent);
+            dictionary.put("def", Stat.DEFPercent);
+            dictionary.put("hb", Stat.HealingBonus);
+            dictionary.put("n", Stat.None);
+            dictionary.put("elementaldmg", Stat.ElementalDMGBonus);
+            dictionary.put("physicaldmg", Stat.PhysicalDMGBonus);
+            dictionary.put("Physical DMG%", Stat.FlatHP);
+        }
         public static Stat parseStat(String typeName){
             return Optional.ofNullable(
                 dictionary.get(
                     StandardUtils.flattenName(typeName)
                 )
             )
-            .orElseThrow(()->new IllegalArgumentException("Invalid stat type"));
+            .orElseThrow(()->new IllegalArgumentException("Invalid stat type: " + typeName));
         }
+    }
+
+    public boolean isElementalDMGBonus(){
+        return switch(this){
+            case PyroDMGBonus, CryoDMGBonus, GeoDMGBonus, DendroDMGBonus, ElectroDMGBonus, HydroDMGBonus, AnemoDMGBonus -> true;
+            default -> false;
+        };
     }
 };
 

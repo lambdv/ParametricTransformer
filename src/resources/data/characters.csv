@@ -1,68 +1,68 @@
 Character, baseHP, baseATK, baseDEF, stat1, stat1value
 Amber, 9461, 223, 601, ATK%, 0.24
-Kaeya, 10303, 223, 670, ER%, 0.267
-Lisa, 10303, 223, 670, EM, 96
-Barbara, 11526, 223, 670, HP%, 0.24
-Razor, 14268, 311, 876, Elemental DMG%, 0.24
-Xiangling, 11526, 311, 670, EM, 96
-Beidou, 14268, 311, 876, Elemental DMG%, 0.24
-Xingqiu, 11526, 311, 670, ATK%, 0.24
-Ningguang, 11526, 311, 670, Elemental DMG%, 0.24
-Fischl, 11526, 311, 670, ATK%, 0.24
-Bennett, 11526, 311, 670, ER%, 0.267
-Noelle, 14268, 223, 876, DEF, 0.3
-Chongyun, 11526, 311, 670, ATK%, 0.24
-Sucrose, 11526, 223, 670, Elemental DMG%, 0.24
-Jean, 14268, 311, 876, HB, 0.165
-Diluc, 14268, 415, 876, CR%, 0.192
-Qiqi, 14268, 223, 876, HB, 0.165
-Mona, 11526, 311, 670, ER%, 0.267
-Keqing, 11526, 415, 670, CD%, 0.384
-Venti, 11526, 311, 670, ER%, 0.267
-Klee, 11526, 415, 670, Elemental DMG%, 0.24
-Diona, 11526, 223, 670, Elemental DMG%, 0.24
-Tartaglia, 11526, 415, 670, Elemental DMG%, 0.24
-Xinyan, 11526, 415, 670, ATK%, 0.24
-Zhongli, 14268, 311, 876, Elemental DMG%, 0.288
-Albedo, 11526, 311, 670, Elemental DMG%, 0.288
-Ganyu, 11526, 415, 670, CD%, 0.384
-Xiao, 14268, 415, 876, CR%, 0.192
+Kaeya, 11636, 223, 792, ER%, 0.267
+Lisa, 10830, 232, 623, EM, 96
+Barbara, 9787, 159, 669, HP%, 0.24
+Razor, 11962, 234, 751, Elemental DMG%, 0.24
+Xiangling, 10875, 225, 669, EM, 96
+Beidou, 13050, 225, 648, Elemental DMG%, 0.24
+Xingqiu, 10222, 202, 758, ATK%, 0.24
+Ningguang, 9787, 212, 573, Elemental DMG%, 0.24
+Fischl, 9189, 244, 594, ATK%, 0.24
+Bennett, 12397, 191, 771, ER%, 0.267
+Noelle, 12071, 191, 799, DEF, 0.3
+Chongyun, 10875, 223, 648, ATK%, 0.24
+Sucrose, 9244, 174, 703, Elemental DMG%, 0.24
+Jean, 14695, 239, 769, HB, 0.165
+Diluc, 12981, 335, 784, CR%, 0.192
+Qiqi, 12368, 287, 922, HB, 0.165
+Mona, 10409, 287, 653, ER%, 0.267
+Keqing, 13103, 323, 799, CD%, 0.384
+Venti, 10531, 263, 669, ER%, 0.267
+Klee, 10287, 311, 615, Elemental DMG%, 0.24
+Diona, 9570, 212, 601, Elemental DMG%, 0.24
+Tartaglia, 13103, 301, 815, Elemental DMG%, 0.24
+Xinyan, 10875, 225, 648, ATK%, 0.24
+Zhongli, 14695, 251, 738, Elemental DMG%, 0.288
+Albedo, 10875, 225, 648, Elemental DMG%, 0.288
+Ganyu, 9797, 335, 630, CD%, 0.384
+Xiao, 12736, 349, 799, CR%, 0.192
 Hu Tao, 15552, 106.43, 876, CD%, 0.384
-Rosaria, 11526, 415, 670, ATK%, 0.24
-Yanfei, 11526, 415, 670, Elemental DMG%, 0.24
-Eula, 14268, 415, 876, CD%, 0.384
-Kazuha, 11526, 311, 670, EM, 96
+Rosaria, 10875, 225, 648, ATK%, 0.24
+Yanfei, 9787, 212, 573, Elemental DMG%, 0.24
+Eula, 12981, 335, 784, CD%, 0.384
+Kazuha, 10875, 225, 648, EM, 96
 Ayaka, 12858, 342, 784, CD%, 0.38
-Sayu, 11526, 311, 670, EM, 96
-Yoimiya, 11526, 415, 670, CR%, 0.192
-Aloy, 11526, 415, 670, Elemental DMG%, 0.24
-Sara, 11526, 415, 670, ATK%, 0.24
-Raiden, 11526, 415, 670, ER%, 0.32
-Kokomi, 11526, 415, 670, Elemental DMG%, 0.288
-Thoma, 11526, 415, 670, ATK%, 0.24
-Gorou, 11526, 415, 670, Elemental DMG%, 0.24
-Itto, 11526, 415, 670, CR%, 0.192
-Yun Jin, 11526, 415, 670, ER%, 0.267
-Shenhe, 11526, 415, 670, ATK%, 0.24
-Yae, 11526, 415, 670, CR%, 0.192
-Ayato, 11526, 415, 670, CD%, 0.384
-Yelan, 11526, 415, 670, CR%, 0.192
-Kuki, 11526, 415, 670, HP%, 0.24
-Heizou, 11526, 415, 670, Elemental DMG%, 0.24
-Collei, 11526, 415, 670, ATK%, 0.24
-Tighnari, 11526, 415, 670, Elemental DMG%, 0.24
-Dori, 11526, 415, 670, HP%, 0.24
-Candace, 11526, 415, 670, HP%, 0.24
-Cyno, 11526, 415, 670, CD%, 0.384
-Nilou, 11526, 415, 670, HP%, 0.24
-Nahida, 11526, 415, 670, EM, 96
-Layla, 11526, 415, 670, HP%, 0.24
-Faruzan, 11526, 415, 670, ATK%, 0.24
-Wanderer, 11526, 415, 670, CR%, 0.192
-Yaoyao, 11526, 415, 670, HP%, 0.24
-Alhaitham, 11526, 415, 670, Elemental DMG%, 0.24
-Dehya, 11526, 415, 670, HP%, 0.24
-Mika, 11526, 415, 670, HP%, 0.24
-Kaveh, 11526, 415, 670, EM, 96
-Baizhu, 11526, 415, 670, HP%, 0.24
-Kirara, 11526, 415, 670, HP%, 0.24
+Sayu, 10875, 225, 648, EM, 96
+Yoimiya, 9787, 212, 573, CR%, 0.192
+Aloy, 9787, 212, 573, Elemental DMG%, 0.24
+Sara, 9787, 212, 573, ATK%, 0.24
+Raiden, 12981, 335, 784, ER%, 0.32
+Kokomi, 10409, 287, 653, Elemental DMG%, 0.288
+Thoma, 9787, 212, 573, ATK%, 0.24
+Gorou, 9787, 212, 573, Elemental DMG%, 0.24
+Itto, 12981, 335, 784, CR%, 0.192
+Yun Jin, 9787, 212, 573, ER%, 0.267
+Shenhe, 12981, 335, 784, ATK%, 0.24
+Yae, 9787, 212, 573, CR%, 0.192
+Ayato, 12981, 335, 784, CD%, 0.384
+Yelan, 10409, 287, 653, CR%, 0.192
+Kuki, 9787, 212, 573, HP%, 0.24
+Heizou, 9787, 212, 573, Elemental DMG%, 0.24
+Collei, 9787, 212, 573, ATK%, 0.24
+Tighnari, 9787, 212, 573, Elemental DMG%, 0.24
+Dori, 9787, 212, 573, HP%, 0.24
+Candace, 9787, 212, 573, HP%, 0.24
+Cyno, 12981, 335, 784, CD%, 0.384
+Nilou, 10409, 287, 653, HP%, 0.24
+Nahida, 9787, 212, 573, EM, 96
+Layla, 9787, 212, 573, HP%, 0.24
+Faruzan, 9787, 212, 573, ATK%, 0.24
+Wanderer, 12981, 335, 784, CR%, 0.192
+Yaoyao, 9787, 212, 573, HP%, 0.24
+Alhaitham, 12981, 335, 784, Elemental DMG%, 0.24
+Dehya, 12981, 335, 784, HP%, 0.24
+Mika, 9787, 212, 573, HP%, 0.24
+Kaveh, 9787, 212, 573, EM, 96
+Baizhu, 12981, 335, 784, HP%, 0.24
+Kirara, 9787, 212, 573, HP%, 0.24

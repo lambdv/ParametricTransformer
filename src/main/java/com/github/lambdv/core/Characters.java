@@ -24,12 +24,18 @@ public final class Characters {
      * @return
      */
     public static Character of(String name){
+        var flattenName = StandardUtils.flattenName(name);
+        if(!cache.containsKey(flattenName))
+            cache(name);
+        return cache.get(flattenName).parseCharacter();
+    }
+
+    public static Character cache(String name){
         var flattenName = StandardUtils.flattenName(name); //normalize name
-        if(cache.containsKey(flattenName)) //check for cached CharacterKey
-            return cache.get(flattenName).parseCharacter();
         try{ 
-            return Files.lines(databasePath).parallel() //read file from databasePath as a stream of lines
+            return Files.lines(databasePath)//read file from databasePath as a stream of lines
                 .skip(1) //skip schema header
+                //.parallel()
                 .map(line -> line.split(",")) //split each line by comma
                 .filter(row -> StandardUtils.flattenName(row[0]).equals(flattenName))
                 .map(row -> CharacterKey.of(row)) //parse each row into a CharacterKey
@@ -40,20 +46,11 @@ public final class Characters {
                 })
                 .orElseThrow(()->new RuntimeException("Character not found in database"));
         }
-        catch(Exception e){ 
-            throw new RuntimeException("Error reading database: " + e.getMessage()); 
-        }
+        catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
     }
 
-    private static Character parseCharacter(String[] data){
-        return new Character(
-            data[0], //name
-            Double.parseDouble(data[1]), //baseHP
-            Double.parseDouble(data[2]), //baseATK
-            Double.parseDouble(data[3]), //baseDEF
-            Stat.parseStat(data[4]), //ascensionStatType
-            Double.parseDouble(data[5]) //ascensionStatAmount
-        );
+    public static void cache(String... names){
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
