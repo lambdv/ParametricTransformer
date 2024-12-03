@@ -279,5 +279,14 @@ public class ArtifactBuilder implements StatTable{
         ).stream();
     }
 
+    public String toString(){
+        return artifacts()
+            .map(a -> a.statType().toString())
+            .collect(Collectors.joining(", ", "Main Stats: ", ""))
+            + "\nRolls: " + rolls()
+            //+ "\nRolls Left: " + numRollsLeft()
+            //+ "\nRolls Left for each substat: " + substatConstraints
+        ;
+    }
 }
 

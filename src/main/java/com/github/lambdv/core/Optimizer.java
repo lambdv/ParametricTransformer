@@ -2,23 +2,20 @@ package com.github.lambdv.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Utility class that provides optimization algorithms for a given character and rotation.
  * @throws IllegalArgumentException if the energy recharge requirements cannot be met with substats alone
  */
 public class Optimizer {
-    public static StatTable optimialArtifactSubStatDistrbution(final Character c, final Rotation r, double energyRechargeRequirements) throws IllegalArgumentException{
-        var bob = ArtifactBuilder.KQMC(c.flower().get(), c.feather().get(), c.sands().get(), c.goblet().get(), c.circlet().get());
-        var target = new BuffedStatTable(c.build(), ()->bob.substats()); 
+    public static ArtifactBuilder optimialArtifactSubStatDistrbution(final Character c, final Rotation r, double energyRechargeRequirements) throws IllegalArgumentException{
 
-        try{
-            while (target.get(Stat.EnergyRecharge) < energyRechargeRequirements)
-                bob.roll(Stat.EnergyRecharge, Artifacts.RollQuality.AVG);
-        }
-        catch(AssertionError e){
-            throw new IllegalArgumentException("Energy Recharge requirements cannot be met with substats alone");
-        }
+        var bob = ArtifactBuilder.KQMC(c.flower().get(), c.feather().get(), c.sands().get(), c.goblet().get(), c.circlet().get());
+        var target = BuffedStatTable.of(c.build(), ()->bob.substats()); 
+
+        while (target.get(Stat.EnergyRecharge) < energyRechargeRequirements)
+            bob.roll(Stat.EnergyRecharge, Artifacts.RollQuality.AVG);
 
         var substattypes = ArtifactBuilder.possibleSubStats().toList();
 
@@ -38,10 +35,16 @@ public class Optimizer {
                 .get().getKey();
             bob.roll(bestNextStatToRollInto, Artifacts.RollQuality.AVG);
         }
-        return ()->bob.substats();
+        return bob;
     }
 
     public static ArtifactBuilder optimal5StarArtifactMainStats(final Character c, final Rotation r, double energyRechargeRequirements){
+        boolean needERSands = c.get(Stat.EnergyRecharge) < energyRechargeRequirements;
+        boolean ERSandsIsntEnough = c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge) < energyRechargeRequirements;
+        if(needERSands && ERSandsIsntEnough)
+            throw new IllegalArgumentException("Energy Recharge requirements cannot be met with substats alone");
+        
+
         Character copy = c.clone();
         copy.unequipAllArtifacts();
         Flower bestFlower = new Flower(5, 20);
@@ -55,7 +58,7 @@ public class Optimizer {
 
         double bestComboDPR = 0;
         
-        for(Stat sandsMainStat : Sands.allowlist()){
+        for(Stat sandsMainStat : needERSands? List.of(Stat.EnergyRecharge): Sands.allowlist()){
             for(Stat gobletMainStat : Goblet.allowlist()){
                 for(Stat circletMainStat : Circlet.allowlist()){
                     copy.equip(new Sands(5, 20, sandsMainStat));
@@ -74,8 +77,7 @@ public class Optimizer {
         copy.equip(bestSands);
         copy.equip(bestGoblet);
         copy.equip(bestCirclet);
-        //return new ArtifactBuilder(copy.flower().get(), copy.feather().get(), copy.sands().get(), copy.goblet().get(), copy.circlet().get());
-        return new ArtifactBuilder();
+        return new ArtifactBuilder(copy.flower().get(), copy.feather().get(), copy.sands().get(), copy.goblet().get(), copy.circlet().get());
     }
 
     public static ArtifactBuilder optimalArtifacts(final Character c, final Rotation r, double energyRechargeRequirements){
@@ -88,62 +90,3 @@ public class Optimizer {
 
 
 
-
-
-/**
- * Visitor object that provides operations/algorithms to optimize a character's stats and gear distribution for a given rotation.
- */
-interface Visitor<T> {
-    T visitCharacter(Character c);
-    T visitWeapon(Weapon w);
-    T visitArtifact(Artifact a);
-}
-
-class CloneVisitor implements Visitor<StatTable> {
-    public Character visitCharacter(Character c){
-        return c.clone();
-    }
-    public Weapon visitWeapon(Weapon w){
-        if(Weapons.isCached(w)) 
-            return Weapons.of(w.name());
-        return new Weapon(
-            w.name(),
-            w.rarity(),
-            w.level(),
-            w.refinement(),
-            w.baseATK(),
-            w.mainStatType(),
-            w.mainStatAmount()
-        );
-    }
-    public Character visitArtifact(Artifact a){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-}
-
-class KQMCArtifactMainAndSubs implements Visitor<ArtifactBuilder> {
-    private final Rotation r;
-    private final double energyRechargeRequirements;
-
-    public KQMCArtifactMainAndSubs(Rotation r, double energyRechargeRequirements){
-        this.r = r;
-        this.energyRechargeRequirements = energyRechargeRequirements;
-    }
-
-    public ArtifactBuilder visitCharacter(Character c){
-        var subs = Optimizer.optimialArtifactSubStatDistrbution(c, r, energyRechargeRequirements);
-        var mains = Optimizer.optimal5StarArtifactMainStats(c, r, energyRechargeRequirements);
-        c.add(subs);
-        c.add(mains);
-        if(1 != 100) throw new AssertionError("This is a test");
-        return mains;
-    }
-
-    public ArtifactBuilder visitWeapon(Weapon w){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public ArtifactBuilder visitArtifact(Artifact a){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-}

@@ -47,7 +47,7 @@ public class Character implements StatTable{
             Stat.BaseDEF, baseDEF,
             Stat.CritRate, 0.05,
             Stat.CritDMG, 0.5,
-            Stat.EnergyRecharge, 1.00
+            Stat.EnergyRecharge, 0.0
         ));
         baseStats.merge(ascensionStatType, ascensionStatAmount, Double::sum);
         fluidStats = new HashMap<>();
@@ -111,6 +111,7 @@ public class Character implements StatTable{
         } return this;
     }
 
+
     public void unequipWeapon(){weapon = Optional.empty();}
     public void unequipFlower(){flower = Optional.empty();}
     public void unequipFeather(){feather = Optional.empty();}
@@ -131,6 +132,7 @@ public class Character implements StatTable{
     public Optional<Sands> sands(){return sands;}
     public Optional<Goblet> goblet(){return goblet;}
     public Optional<Circlet> circlet(){return circlet;}
+
 
     public Map<Stat, Double> stats(){
         return Arrays.stream(Stat.values())
@@ -166,5 +168,6 @@ public class Character implements StatTable{
     public Map<Stat, Double> substats(){
         return Collections.unmodifiableMap(substats);
     }
+
 }
 

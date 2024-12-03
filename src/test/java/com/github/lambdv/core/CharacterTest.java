@@ -86,4 +86,42 @@ public class CharacterTest {
         var after2 = rot.compute(c);
         assertEquals(557, (int) after2, 0.00000001);
     }
+
+    @Test public void AcceptArtifactOptimizer(){
+        Rotation r = new Rotation()
+            .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
+        var c = Characters.of("hutao")
+            .equip(Weapons.of("dragonsbane"));
+        var before = r.compute(c);
+        var bob = c.accept(
+            new KQMCArtifactMainAndSubs(r,0)
+        );
+        //System.out.println(bob);
+        var after = r.compute(bob);
+        assert before < after;
+
+    }
+
+    @Test public void AcceptArtifactOptimizerWithEnergyRechargeRequirements(){
+        var r = new Rotation()
+            .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
+        var c = Characters.of("hutao");
+            // .equip(Weapons.of("thecatch"));
+
+        try{
+            c.accept(new KQMCArtifactMainAndSubs(r, 2.00));
+            assert false;
+        }
+        catch (IllegalArgumentException e){
+            assert e.getMessage().equals("Energy Recharge requirements cannot be met with substats alone");
+            //System.out.println(c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge));
+        }
+
+        c = Characters.of("raiden")
+            .equip(Weapons.of("thecatch"));
+        try{
+            c.accept(new KQMCArtifactMainAndSubs(r, 2.00));
+        }
+        catch (IllegalArgumentException e){ assert false; }
+    }
 }

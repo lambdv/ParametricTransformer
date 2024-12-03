@@ -55,8 +55,7 @@ class DamageFormulas {
                 case Forward -> Formulas.AmplifierMultiplier(2.0, total.get(Stat.ElementalMastery), total.get(Stat.ReactionBonus));
                 case Reverse -> Formulas.AmplifierMultiplier(1.5, total.get(Stat.ElementalMastery), total.get(Stat.ReactionBonus));
                 case None -> 1.0;
-            } 
-            ;
+            };
 
             double totalDMGBonus = total.get(Stat.DMGBonus)
                 + switch(element){
