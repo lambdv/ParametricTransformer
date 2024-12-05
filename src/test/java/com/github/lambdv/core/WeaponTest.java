@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import com.github.lambdv.core.Stat;
 import com.github.lambdv.core.Weapons;
 
+/**
+ * Test for the Weapon class and Weapons class factory method
+ */
 public class WeaponTest {
     /**
     * Weapons.of() Factory Method can create Weapon object from CSV database with a given name
@@ -32,7 +35,7 @@ public class WeaponTest {
         Weapons.cacheAll();
         var w = Weapons.of("Ibis Piercer"); //get weapon from database
         var endTime = System.nanoTime();
-        System.out.println((endTime - startTime) / 1_000_000_000.0 + " seconds");
+        //System.out.println((endTime - startTime) / 1_000_000_000.0 + " seconds");
         //check values are correct
         assertTrue(w.name().equals("Ibis Piercer"));
         // assertTrue(w.baseATK() == 565);

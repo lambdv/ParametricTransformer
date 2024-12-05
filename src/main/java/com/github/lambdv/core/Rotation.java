@@ -9,38 +9,23 @@ import java.util.function.Function;
  * @note Rotations hold dynamic instructions/formulas that are executed to output a Damage Per Rotation (DPR) value.
  * @note Rotations or Damage Instances are needed by a character to calculate damage and give a target to optimize stats and gearing for.
  */
-public class Rotation {
-    StatTable target;
-    Map<String, DamageInstance> instances;
-
+public record Rotation(Map<String, DamageInstance> actions){
     public Rotation(){
-        this.target = StatTable.empty();
-        instances = new HashMap<>();
+        this(new HashMap<>());
     }
-
-
-    public Rotation(StatTable target){
-        this.target = target;
-        instances = new HashMap<>();
-    }
-
-    public Rotation(StatTable target, Map<String, DamageInstance> instances){
-        this.target = target;
-        this.instances = instances;
-    }
-
-    public Rotation add(String name, DamageInstance instance){
-        instances.put(name, instance);
-        return this;
-    }
-    
     public double compute(StatTable target){
-        return instances.values().stream()
-            .mapToDouble(d->d.apply(target))
+        return actions.values().parallelStream()
+            .mapToDouble(f->f.apply(target))
             .sum();
     }
 
-    public double compute(){
-        return compute(target);
+    public double compute(StatTable target, StatTable... buffs){
+        var total = new BuffedStatTable(target, buffs);
+        return actions.values().parallelStream()
+            .mapToDouble(f->f.apply(total))
+            .sum();
     }
-}
+    public Rotation add(String name, DamageInstance instance){
+        actions.put(name, instance); return this;
+    }
+} 

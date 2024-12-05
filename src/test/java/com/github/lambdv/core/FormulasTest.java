@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 
-
+/**
+ * tests for checking the correctness of the formula methods in the Formulas class
+ */
 public class FormulasTest {
     @Test public void testAvgCritMultiplier(){
         assertEquals(1, Formulas.AvgCritMultiplier(0, 0), 0.0001); //0 cr, cd does not matter

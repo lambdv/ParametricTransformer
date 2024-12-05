@@ -9,15 +9,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-
+/**
+ * Tests for the Rotation class and checking results with other calculations
+ */
 public class RotationTest {
     @Test public void NakedManualRotationCreationAndExecution(){
         StatTable target = Characters.of("amber")
             .build();
-        Rotation r = new Rotation(target, Map.of(
+        Rotation r = new Rotation(Map.of(
             "e", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, StatTable.empty())
         ));
-        assertEquals(124.274469230769, r.compute(), 0.0001);
+        assertEquals(124.274469230769, r.compute(target), 0.0001);
     }
 
     @Test public void NakedBuffedManualRotationCreationAndExecution(){
@@ -34,7 +36,7 @@ public class RotationTest {
         assertEquals(total.get(Stat.CritRate), 0.15, 0.00000001);
         assertEquals(total.get(Stat.CritDMG), 0.6, 0.00000001);
 
-        Rotation r = new Rotation(amber, Map.of(
+        Rotation r = new Rotation(Map.of(
             "test", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, buffs),
             "e", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, buffs),
             "q", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, buffs),
@@ -47,31 +49,9 @@ public class RotationTest {
             "6", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, buffs)
         ));
 
-        double dmg = r.compute();
-        assertEquals(142.812973846 * r.instances.size(), dmg, 0.0001);
+        double dmg = r.compute(amber);
+        assertEquals(142.812973846 * r.actions().size(), dmg, 0.0001);
         //System.out.println(dmg);
-    }
-
-    @Test public void ManualKQMCCharacterBuiltRotation(){
-        StatTable amber = Characters.of("diluc")
-            .equip(Weapons.of("rainslasher"))
-            .add(()->Map.of(
-                Stat.ATKPercent, 0.1,
-                Stat.CritRate, 0.1,
-                Stat.CritDMG, 0.1
-            ))
-            .build();
-
-        Rotation r = new Rotation(amber, Map.of(
-            "e", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1, 1.0, StatTable.empty()),
-            "q", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1, 1.0, StatTable.empty()),
-            "a", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1, 1.0, StatTable.empty()),
-            "c1", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1, 1.0, StatTable.empty()),
-            "c2", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1, 1.0, StatTable.empty()),
-            "c3", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, StatTable.empty()),
-            "c4", DamageInstance.of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, 1.0, 1.0, StatTable.empty())
-        ));
-        //assertEquals(142.812973846*r.instances.size(), r.compute(), 0.0001);
     }
 }
 

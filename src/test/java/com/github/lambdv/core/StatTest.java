@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 import com.github.lambdv.core.Stat;
+
+/**
+ * Tests for the Stat class
+ */
 public class StatTest {
     /**
      * Stat.parseStat() can convert string to Stat enum as intended

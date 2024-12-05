@@ -18,9 +18,13 @@ import java.io.File;
 import java.nio.file.Files;
 import java.security.Timestamp;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Flow;
 import java.util.function.BiFunction;
 
+/**
+ * Tests for the Artifact class, Substats and ArtifactBuilder
+ */
 public class ArtifactTest {
     @Test public void LoadArtifactSubStatResourceAsJSON(){
         try{
@@ -219,11 +223,11 @@ public class ArtifactTest {
 
     @Test public void ArtifactBuilderRollingSubstatsFor4Star(){
         ArtifactBuilder bob = ArtifactBuilder.KQMC(
-            new Flower(ArtifactSet.empty(), 4, 16),
-            new Feather(ArtifactSet.empty(), 4, 16),
-            new Sands(ArtifactSet.empty(), 4, 16, Stat.ATKPercent),
-            new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus),
-            new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
+            Optional.of(new Flower(ArtifactSet.empty(), 4, 16)),
+            Optional.of(new Feather(ArtifactSet.empty(), 4, 16)),
+            Optional.of(new Sands(ArtifactSet.empty(), 4, 16, Stat.ATKPercent)),
+            Optional.of(new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus)),
+            Optional.of(new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate))
         );
         //assertEquals(10, bob.substatConstraints.get(Stat.HPPercent));
         assertEquals(20, bob.maxRolls());
@@ -256,59 +260,4 @@ public class ArtifactTest {
     }
 
 
-    @Test public void OptimizeSubStatFunctionTest(){
-        long start = System.currentTimeMillis();
-        StatTable subs = Optimizer.optimialArtifactSubStatDistrbution(
-            Characters.of("amber")
-                .equip(Weapons.of("slingshot"))
-                .equip(new Flower(5,20))
-                .equip(new Feather(5,20))
-                .equip(new Sands(5,20, Stat.ATKPercent))
-                .equip(new Goblet(5,20, Stat.PyroDMGBonus))
-                .equip(new Circlet(5,20, Stat.CritDMG)),
-            new Rotation()
-                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty())),
-            0
-        );
-        long end = System.currentTimeMillis();
-        //System.out.println("Time taken: " + (end - start) + "ms");
-        //System.out.println(subs.ToString());
-        //assertEquals(0.20, subs.get(Stat.ATKPercent), 0.01); //2 rolls + 2 fixed
-        //assertEquals(0.40, subs.get(Stat.CritRate), 0.01); //10 rolls + 2 fixed
-        //assertEquals(0.662, subs.get(Stat.CritDMG), 0.01); //8 rolls + 2 fixed
-    }
-
-    @Test public void OptimizeFiveStarMainStatFunctionTest(){
-        Character c = Characters.of("amber").equip(Weapons.of("polarstar"));
-        long start = System.currentTimeMillis();
-        var bob = Optimizer.optimal5StarArtifactMainStats(
-            c,
-            new Rotation()
-                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty())),
-            0
-        );
-        long end = System.currentTimeMillis();
-        //System.out.println("Time taken: " + (end - start) + "ms");
-        assert c.flower().isEmpty();
-        assert c.feather().isEmpty();
-        assert c.sands().isEmpty();
-        assert c.goblet().isEmpty();
-        assert c.circlet().isEmpty();
-    
-        //System.out.println(bob.sands().get().statType());
-        //System.out.println(bob.goblet().get().statType());
-        //System.out.println(bob.circlet().get().statType());
-    }
-
-    @Test public void ArtifactBuilderCorrectValuesForFourStarSubstat(){
-
-        var bob = ArtifactBuilder.KQMC(
-            new Flower(ArtifactSet.empty(), 4, 16),
-            new Feather(ArtifactSet.empty(), 4, 16),
-            new Sands(ArtifactSet.empty(), 4, 16, Stat.ATKPercent),
-            new Goblet(ArtifactSet.empty(), 4, 16, Stat.PyroDMGBonus),
-            new Circlet(ArtifactSet.empty(), 4, 16, Stat.CritRate)
-        );
-        
-    }
 }

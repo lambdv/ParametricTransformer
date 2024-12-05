@@ -1,10 +1,6 @@
 package com.github.lambdv.core;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
-
-import com.github.lambdv.utils.DeepClone;
-
 import com.github.lambdv.core.Stat;
 import com.github.lambdv.core.Weapon;
 
@@ -16,7 +12,6 @@ import com.github.lambdv.core.Weapon;
  */
 public class Character implements StatTable{
     private static final long serialVersionUID = 1L;
-
     //character identity details
     public int level = 90;
     public String name;
@@ -36,8 +31,6 @@ public class Character implements StatTable{
     Map<Stat, Double> artifactSet2Piece;
     Map<Stat, Double> artifactSet4Piece;
 
-
-    
     public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
         this.name = name;
         this.ascensionStatType = ascensionStatType;
@@ -58,14 +51,31 @@ public class Character implements StatTable{
         artifactSet4Piece = new HashMap<>();
     }
 
+    /**
+     * Adds static stat value pairs to character's fluid stat pool
+     * @param type
+     * @param amount
+     * @return
+     */
     public Character add(Stat type, double amount){
         fluidStats.merge(type, amount, Double::sum); return this;
     }
 
+    /**
+     * Adds multiple static stat value pairs to character's fluid stat pool
+     * @param stats
+     * @return
+     */
     public Character add(StatTable stats){
         stats.stats().forEach(this::add); return this;
     }
 
+    /**
+     * Adds dynamic stat value pairs to character's dynafluid stat pool
+     * @param type
+     * @param dynamicAmount
+     * @return
+     */
     public Character add(Stat type, Function<StatTable, Double> dynamicAmount){
         dynamicFluidStats.merge(type, List.of(dynamicAmount), (l1, l2) -> {
             List<Function<StatTable, Double>> l = new ArrayList<>(l1);
@@ -73,14 +83,10 @@ public class Character implements StatTable{
         }); return this;
     }
 
-    public double getDynamic(Stat type){
-        if(!dynamicFluidStats.containsKey(type)) 
-            return 0.0;
-        return dynamicFluidStats.get(type).stream()
-            .map(f -> f.apply(this))
-            .reduce(0.0, Double::sum);
-    }
-    
+    /**
+     * Getter for the sum value of a stat type from a character
+     * @note multiple get calls on a character may be expensive: build first for inital expensive computation and then log(n) cost on gets
+     */
     @Override public double get(Stat type){
         return baseStats.getOrDefault(type, 0.0) 
             + fluidStats.getOrDefault(type, 0.0)
@@ -93,14 +99,36 @@ public class Character implements StatTable{
             + substats.getOrDefault(type, 0.0)
             + artifactSet2Piece.getOrDefault(type, 0.0)
             + artifactSet4Piece.getOrDefault(type, 0.0)
-            + getDynamic(type)
-        ;
+            + getDynamic(type);
     }
 
+    /**
+     * Getter for the sum value of a dynamic stat type from a character
+     * @param type
+     * @return
+     */
+    private double getDynamic(Stat type){
+        if(!dynamicFluidStats.containsKey(type)) 
+            return 0.0;
+        return dynamicFluidStats.get(type).stream()
+            .map(f -> f.apply(this))
+            .reduce(0.0, Double::sum);
+    }
+
+    /**
+     * Sets character's weapon field to the given weapon
+     * @param weapon
+     * @return this
+     */
     public Character equip(Weapon weapon){
         this.weapon = Optional.of(weapon); return this;
     }
 
+    /**
+     * Sets character's artifact field to the given artifact
+     * @param artifact
+     * @return this
+     */
     public Character equip(Artifact artifact){
         switch (artifact) {
             case Flower flower -> this.flower = Optional.of(flower);
@@ -124,7 +152,7 @@ public class Character implements StatTable{
         goblet = Optional.empty();
         circlet = Optional.empty();
     }
-
+    
     public Optional<Weapon> weapon(){return weapon;}
     public Optional<Flower> flower(){return flower;}
     public Optional<Feather> feather(){return feather;}
@@ -132,6 +160,9 @@ public class Character implements StatTable{
     public Optional<Goblet> goblet(){return goblet;}
     public Optional<Circlet> circlet(){return circlet;}
 
+    /**
+     * Builds a map the sum of all stat-value pairs from a character
+     */
     public Map<Stat, Double> stats(){
         return Arrays.stream(Stat.values())
             .filter(s -> get(s) != 0.0)
@@ -143,13 +174,26 @@ public class Character implements StatTable{
         return name
             + "\nBase Stats: " + baseStats
             + "\nFluid Stats: " + fluidStats
-            + "\nWeapon: " + weapon;
+            + "\nWeapon: " + weapon
+            + "\nFlower: " + flower
+            + "\nFeather: " + feather
+            + "\nSands: " + sands
+            + "\nGoblet: " + goblet
+            + "\nCirclet: " + circlet
+            + "\nSubstats: " + substats
+            + "\nArtifact Set 2 Piece: " + artifactSet2Piece
+            + "\nArtifact Set 4 Piece: " + artifactSet4Piece
+            + "\nDynamic Fluid Stats: " + dynamicFluidStats
+        ;
     }
 
-    public <T> T accept(Visitor<T> visitor){
+    public <T> T accept(StatTableVisitor<T> visitor){
         return visitor.visitCharacter(this);
     }
 
+    /**
+     * Creates a deep copy of the character
+     */
     public Character clone(){
         return (Character) this.accept(new CloneVisitor());
     }

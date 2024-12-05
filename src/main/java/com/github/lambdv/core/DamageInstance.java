@@ -1,6 +1,5 @@
 package com.github.lambdv.core;
 import java.util.function.Function;
-import java.util.Map;
 
 /**
  * 
@@ -25,6 +24,21 @@ enum Amplifier{
 }
 enum ReactionType { Overloaded, Superconduct, Electrocharged, Swirl, Shattered, Aggravate, Spread }
 
+// record DMG(
+//     Function<StatTable, Double> formula, 
+//     Element element, 
+//     DamageType type, 
+//     BaseScaling scaling, 
+//     Amplifier amplifier, 
+//     double instances, 
+//     double motionValue, 
+//     StatTable buffs
+// ) implements Function<StatTable, Double>{ 
+//     public Double apply(StatTable target){
+//         return formula.apply(target);
+//     }
+// }
+
 /**
  * Utility class for methods returing damage instance lambda objects
  */
@@ -42,8 +56,8 @@ class DamageFormulas {
             assert element.equals(Element.Pyro) || element.equals(Element.Hydro) || element.equals(Element.Cryo);
 
         return (c) -> {
-            var total = StatTables.merge(c, buffs);
-
+            //var total = StatTables.merge(c, buffs);
+            var total = StatTable.of(c, buffs);
             double totalBaseScalingStat = switch(scaling){
                 case ATK -> Formulas.totalATK(total);
                 case DEF -> Formulas.totalDEF(total);

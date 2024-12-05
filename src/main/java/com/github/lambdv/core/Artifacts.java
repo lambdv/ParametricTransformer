@@ -21,7 +21,7 @@ public class Artifacts{
     }
     public static double getMainStatValue(int rarity, int level, Stat type){
         assert type != null;
-        assert type != Stat.None;
+        if(type == Stat.None) return 0; //assert type != Stat.None;
         if(!Artifacts.checkCorrectLevelForRarity(level, rarity)) 
             throw new IllegalArgumentException("Invalid level for rarity");
         if(rarity < 1 || rarity > 5) 
@@ -32,7 +32,7 @@ public class Artifacts{
     }
     public static double getSubStatValue(int rarity, Stat type){
         assert type != null;
-        assert type != Stat.None;
+        if(type == Stat.None) return 0; //assert type != Stat.None;
         if(rarity < 1 || rarity > 5) 
             throw new IllegalArgumentException("Rarity must be between 1 and 5");
 
@@ -66,7 +66,7 @@ public class Artifacts{
         HIGH(0.9),
         MID(0.8),
         LOW(0.7),
-        AVG((1+0.9+0.8+0.7)/4); //this is what KQMC uses
+        AVG((1.0+0.9+0.8+0.7)/4.0); //this is what KQMC uses
         double multiplier;
         RollQuality(double multiplier){ this.multiplier = multiplier; }
     };

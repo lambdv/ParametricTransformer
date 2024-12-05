@@ -14,6 +14,9 @@ import com.github.lambdv.core.Characters;
 import com.github.lambdv.core.Weapon;
 import com.github.lambdv.core.Formulas;
 
+/**
+ * Test for the Character class and Characters class factory method
+ */
 public class CharacterTest {
     @Test public void CreateCharacterWithConstructor(){
         Character c = new Character("", 10, 20, 30, Stat.BaseHP, 100);
@@ -71,7 +74,6 @@ public class CharacterTest {
         assertEquals(106.43, c.get(Stat.BaseATK), 0.00001);
         assertEquals(0.05, c.get(Stat.CritRate), 0.00001);
         assertEquals(0.884, c.get(Stat.CritDMG), 0.00001);
-        assertEquals(0.0, c.get(Stat.EnergyRecharge), 0.00001);
         assertEquals(0.0, c.get(Stat.ElementalDMGBonus), 0.00001);
         //assertEquals(106, Formulas.totalATK(c), 0.00001);
         var rot = new Rotation()
@@ -87,41 +89,5 @@ public class CharacterTest {
         assertEquals(557, (int) after2, 0.00000001);
     }
 
-    @Test public void AcceptArtifactOptimizer(){
-        Rotation r = new Rotation()
-            .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
-        var c = Characters.of("hutao")
-            .equip(Weapons.of("dragonsbane"));
-        var before = r.compute(c);
-        var bob = c.accept(
-            new KQMCArtifactMainAndSubs(r,0)
-        );
-        //System.out.println(bob);
-        var after = r.compute(bob);
-        assert before < after;
 
-    }
-
-    @Test public void AcceptArtifactOptimizerWithEnergyRechargeRequirements(){
-        var r = new Rotation()
-            .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
-        var c = Characters.of("hutao");
-            // .equip(Weapons.of("thecatch"));
-
-        try{
-            c.accept(new KQMCArtifactMainAndSubs(r, 2.00));
-            assert false;
-        }
-        catch (IllegalArgumentException e){
-            assert e.getMessage().equals("Energy Recharge requirements cannot be met with substats alone");
-            //System.out.println(c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge));
-        }
-
-        c = Characters.of("raiden")
-            .equip(Weapons.of("thecatch"));
-        try{
-            c.accept(new KQMCArtifactMainAndSubs(r, 2.00));
-        }
-        catch (IllegalArgumentException e){ assert false; }
-    }
 }

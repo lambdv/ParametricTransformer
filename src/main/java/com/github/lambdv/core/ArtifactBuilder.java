@@ -50,7 +50,7 @@ public class ArtifactBuilder implements StatTable{
      * 20 fluid/distrubted substats left for you or an optimizer to roll
      * @return
      */
-    public static ArtifactBuilder KQMC(Flower flower, Feather feather, Sands sands, Goblet goblet, Circlet circlet){
+    public static ArtifactBuilder KQMC(Optional<Flower> flower, Optional<Feather> feather, Optional<Sands> sands, Optional<Goblet> goblet, Optional<Circlet> circlet){
         ArtifactBuilder builder = new ArtifactBuilder(flower, feather, sands, goblet, circlet){ 
             @Override public int maxRolls(){ 
                 int penalty = (int) artifacts().filter(art->art.rarity() == 4).count()*2;
@@ -74,18 +74,19 @@ public class ArtifactBuilder implements StatTable{
 
     public static ArtifactBuilder KQMC(Stat sandsStat, Stat gobletStat, Stat circletStat){
         return KQMC(
-            new Flower(ArtifactSet.empty(), 5, 20),
-            new Feather(ArtifactSet.empty(), 5, 20),
-            new Sands(ArtifactSet.empty(), 5, 20, sandsStat),
-            new Goblet(ArtifactSet.empty(), 5, 20, gobletStat),
-            new Circlet(ArtifactSet.empty(), 5, 20, circletStat)
+            Optional.of(new Flower(ArtifactSet.empty(), 5, 20)),
+            Optional.of(new Feather(ArtifactSet.empty(), 5, 20)),
+            Optional.of(new Sands(ArtifactSet.empty(), 5, 20, sandsStat)),
+            Optional.of(new Goblet(ArtifactSet.empty(), 5, 20, gobletStat)),
+            Optional.of(new Circlet(ArtifactSet.empty(), 5, 20, circletStat))
         );
     }
 
  
 
     public Map<Stat, Double> mainStats(){
-        return artifacts().collect(Collectors.toMap(Artifact::statType, Artifact::statValue));
+        return artifacts()
+            .collect(Collectors.toMap(Artifact::statType, Artifact::statValue, Double::sum));
     }
 
     public Map<Stat, Double> substats(){
@@ -284,6 +285,7 @@ public class ArtifactBuilder implements StatTable{
             .map(a -> a.statType().toString())
             .collect(Collectors.joining(", ", "Main Stats: ", ""))
             + "\nRolls: " + rolls()
+            + "\nNumRolls: " + numRolls()
             //+ "\nRolls Left: " + numRollsLeft()
             //+ "\nRolls Left for each substat: " + substatConstraints
         ;

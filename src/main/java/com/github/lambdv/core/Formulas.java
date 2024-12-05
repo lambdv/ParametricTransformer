@@ -18,7 +18,9 @@ public class Formulas{
     }
 
     public static double AvgCritMultiplier(double critRate, double critDMG){
-        return (1 + ((Math.max(0.0, Math.min(1.0, critRate))) * critDMG));
+        var clampedCritRate = Math.max(0.0, Math.min(1.0, critRate));
+        //assert clampedCritRate <= 1 && clampedCritRate >= 0;
+        return (1 + (clampedCritRate * critDMG));
     }
 
     public static double DefMultiplier(int characterLevel, Enemy enemy, double defReduction, double defIgnore){

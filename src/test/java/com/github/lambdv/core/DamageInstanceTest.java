@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import com.github.lambdv.core.*;
 import java.util.Map;
 
+/**
+ * Tests for the DamageInstance class
+ */
 public class DamageInstanceTest {
     @Test public void testDamageInstance(){
         var c = Characters.of("amber").build();

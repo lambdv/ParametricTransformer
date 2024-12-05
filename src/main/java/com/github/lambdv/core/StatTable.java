@@ -68,10 +68,14 @@ public interface StatTable extends Serializable{
     public static StatTable of(Stat s0, double v0, Stat s1, double v1, Stat s2, double v2, Stat s3, double v3, Stat s4, double v4, Stat s5, double v5, Stat s6, double v6, Stat s7, double v7){ return () -> Map.of(s0, v0, s1, v1, s2, v2, s3, v3, s4, v4, s5, v5, s6, v6, s7, v7); }
     public static StatTable of(Stat s0, double v0, Stat s1, double v1, Stat s2, double v2, Stat s3, double v3, Stat s4, double v4, Stat s5, double v5, Stat s6, double v6, Stat s7, double v7, Stat s8, double v8){ return () -> Map.of(s0, v0, s1, v1, s2, v2, s3, v3, s4, v4, s5, v5, s6, v6, s7, v7, s8, v8); }
     public static StatTable of(Stat s0, double v0, Stat s1, double v1, Stat s2, double v2, Stat s3, double v3, Stat s4, double v4, Stat s5, double v5, Stat s6, double v6, Stat s7, double v7, Stat s8, double v8, Stat s9, double v9){ return () -> Map.of(s0, v0, s1, v1, s2, v2, s3, v3, s4, v4, s5, v5, s6, v6, s7, v7, s8, v8, s9, v9); }
+    @SuppressWarnings("unchecked") public static StatTable of(Map<Stat, Double>... stats){ return () -> StatTables.merge(stats).stats(); }
+    public static StatTable of(StatTable... stats){ return () -> 
+        StatTables.merge(stats).stats(); 
+    }
 }
 
 interface DynamicStatTable extends StatTable {
-    Map<Stat, List<Function<StatTable, Double>>> dynamicStats();
+    public Map<Stat, List<Function<StatTable, Double>>> dynamicStats();
     public default Map<Stat, Double> stats(){
         return dynamicStats().entrySet().stream()
             .collect(Collectors.toMap(
@@ -131,7 +135,6 @@ record ConcreteMutableStatTable(Map<Stat, Double> stats) implements MutableStatT
     public ConcreteMutableStatTable(){ this(new HashMap<>()); }
     public ConcreteMutableStatTable(StatTable statTable){ this(new HashMap<>(statTable.stats())); }
 }
-
 // record ConcreteMutableDynamicStatTable(Map<Stat, List<Function<StatTable, Double>>> dynamicStats) implements DynamicStatTable{
 //     public ConcreteMutableDynamicStatTable{
 //         assert dynamicStats != null;
@@ -147,6 +150,9 @@ record ConcreteMutableStatTable(Map<Stat, Double> stats) implements MutableStatT
  * concrete decorator pattern for adding buffs over a base stat table.
  */
 record BuffedStatTable(StatTable base, StatTable... buffs) implements StatTable{
+    public BuffedStatTable(StatTable base, StatTable buffs){
+        this(base, new StatTable[]{buffs});
+    }
     public Map<Stat, Double> stats(){ 
         return StatTables.merge(Stream.concat(Stream.of(base.stats()), Arrays.stream(buffs).map(s->s.stats()))).stats();
     }
@@ -184,17 +190,17 @@ class StatTables {
      * @return
      */
     @SuppressWarnings("unchecked") public static <T extends StatTable> StatTable merge(T... statTables) {
-        return merge(Arrays.stream(statTables)
-                    .map(StatTable::stats)
-                    .map(m->(Map<Stat, Double>)m)
-                    .toArray(Map[]::new)
-        );
+        Map<Stat, Double> mergedStats = Arrays.stream(statTables)
+            .flatMap(map -> map.stats().entrySet().stream())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum));
+        return () -> mergedStats;
     }
 
     public static <T extends Map<Stat, Double>> StatTable merge(Stream<T> statTablesMap) {
         return () -> statTablesMap
             .<Map.Entry<Stat, Double>>mapMulti((map, c) -> map.forEach((k, v) -> c.accept(Map.entry(k, v))))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Double::sum, HashMap::new));
     }
+
     private StatTables() {}
 }
