@@ -181,7 +181,7 @@ public class ArtifactBuilder implements StatTable{
      * @param multiplier
      */
     public void roll(Stat substat, Artifacts.RollQuality quality){
-        assert numRollsLeft() > 0 : "No more rolls left to distribute";
+        assert numRollsLeft() > 0 : "No more rolls left to distribute for all substats";
         assert substatConstraints.get(substat) > 0 : "No more rolls left for " + substat;
         substatConstraints.merge(substat, -1, Integer::sum);
         Roll roll = new Roll(5, quality);
@@ -196,16 +196,8 @@ public class ArtifactBuilder implements StatTable{
      * @param multiplier
      */
     public void roll(Stat substat, Artifacts.RollQuality quality, int num){
-        assert numRollsLeft() > 0 : "No more rolls left to distribute";
-        assert substatConstraints.get(substat) > 0 : "No more rolls left for " + substat;
-        substatConstraints.merge(substat, -1, Integer::sum);
-        Roll roll = new Roll(5, quality);
-        substatRolls.merge(substat, new ArrayList<>(List.of(roll)), (l1, l2)->{
-            for(int i = 0; i < num; i++) 
-                l1.add(roll); 
-        return l1;});
-        //substatRolls.merge(substat, 1, Integer::sum);
-        //substatMultipliers.merge(substat, quality.multiplier, Double::sum);
+        for(int i = 0 ; i < num ; i++) 
+            roll(substat, quality);
     }
 
     public void unRoll(Stat substat){

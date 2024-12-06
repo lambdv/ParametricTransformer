@@ -26,10 +26,11 @@ public class Character implements StatTable{
     private Optional<Sands> sands = Optional.empty();
     private Optional<Goblet> goblet = Optional.empty();
     private Optional<Circlet> circlet = Optional.empty();
+    private Map<Stat, Double> substats;
+    private Map<Stat, Double> artifactSet2Piece;
+    private Map<Stat, Double> artifactSet4Piece;
 
-    Map<Stat, Double> substats;
-    Map<Stat, Double> artifactSet2Piece;
-    Map<Stat, Double> artifactSet4Piece;
+
 
     public Character(String name, double baseHP, double baseATK, double baseDEF, Stat ascensionStatType, double ascensionStatAmount){
         this.name = name;
@@ -209,6 +210,22 @@ public class Character implements StatTable{
     }
     public Map<Stat, Double> substats(){
         return Collections.unmodifiableMap(substats);
+    }
+
+    public Character setSubstats(Map<Stat, Double> substats){
+        this.substats = new HashMap<>(substats); return this;
+    }
+
+    public Character clearSubstats(){
+        substats = new HashMap<>(); return this;
+    }
+
+    public Character setArtifactSet2Piece(Map<Stat, Double> artifactSet2Piece){
+        this.artifactSet2Piece = artifactSet2Piece; return this;
+    }
+
+    public Character setArtifactSet4Piece(Map<Stat, Double> artifactSet4Piece){
+        this.artifactSet4Piece = artifactSet4Piece; return this;
     }
 }
 

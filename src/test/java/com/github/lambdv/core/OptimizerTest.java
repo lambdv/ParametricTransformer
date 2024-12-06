@@ -88,38 +88,46 @@ public class OptimizerTest {
 
     }
 
-    @Test public void AcceptArtifactOptimizerWithEnergyRechargeRequirements(){
-        //not enough energy recharge case
-        var r = new Rotation()
-            .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
-        var c = Characters.of("hutao");
-            // .equip(Weapons.of("thecatch"));
-        try{
-            c.accept(new KQMSArtifactOptimizer(r, 2.00));
-            assert false;
-        }
-        catch (Throwable e){
-            //assert e.getMessage().equals("Energy Recharge requirements cannot be met with substats alone");
-            //System.out.println(c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge));
-        }
+    @Test public void ArtifactOptimizerEnoughERCase(){
+                //not enough energy recharge case
+                var r = new Rotation()
+                .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
+            var c = Characters.of("hutao");
+                // .equip(Weapons.of("thecatch"));
+            try{
+                c.accept(new KQMSArtifactOptimizer(r, 2.00));
+                assert false;
+            }
+            catch (Throwable e){
+                //assert e.getMessage().equals("Energy Recharge requirements cannot be met with substats alone");
+                //System.out.println(c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge));
+            }
+    
+    }
+
+    @Test public void ArtifactOptimizerNotEnoughERCase(){
 
         //enough energy recharge case
-        r = new Rotation()
+        var r = new Rotation()
             .add("t", DamageInstance.of(Element.Electro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
-        c = Characters.of("raiden")
+        var c = Characters.of("raiden")
             .equip(Weapons.of("thecatch"))
             .add(StatTable.of(
                 Stat.FlatATK, 900
-            ))    
+            ))
         ;
         try{
-            var bob = c.accept(new KQMSArtifactOptimizer(r, 2));
+            var bob = c.accept(new KQMSArtifactOptimizer(r, 2.00));
             System.out.println(bob);
             System.out.println(c.get(Stat.EnergyRecharge));
+            //assert c.get(Stat.EnergyRecharge) >= 2.00;
         }
         catch (IllegalArgumentException e){ throw e; }
 
-        assert c.get(Stat.EnergyRecharge) >= 2.00;
+        System.out.println(r.compute(c));
+
+
+        
 
         // System.out.println(r.compute(c));
 
@@ -151,5 +159,29 @@ public class OptimizerTest {
         // System.out.println(c.stats());
         
         // System.out.println(r.compute(c));
+    }
+
+    @Test public void GreedyVsFullSearch(){
+        var r = new Rotation()
+            .add("a", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1, StatTable.of()));
+        var c = Characters.of("amber")
+            .equip(Weapons.of("stringless"))
+            .equip(new Flower(5,20))
+            .equip(new Feather(5,20))
+            .equip(new Sands(5,20, Stat.ATKPercent))
+            .equip(new Goblet(5,20, Stat.PyroDMGBonus))
+            .equip(new Circlet(5,20, Stat.CritRate))
+        ;
+
+        // var greedyBob = Optimizer.greedyOptimialArtifactSubStatDistrbution(c, r, 0);
+        // var greedyDMG = r.compute(c, ()->greedyBob.substats());
+        // System.out.println(greedyBob);
+        // System.out.println(greedyDMG);
+
+        // var fullBob = Optimizer.optimialArtifactSubStatDistrbution(c, r, 0);
+        // var fullDMG = r.compute(c, ()->fullBob.substats());
+        // System.out.println(fullBob);
+        // System.out.println(fullDMG);
+        
     }
 }

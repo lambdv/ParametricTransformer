@@ -239,7 +239,7 @@ public class ArtifactTest {
         
         var c = Characters.of("amber");
 
-        BuffedStatTable buffed = BuffedStatTable.of(c, bob);
+        BuffedStatTable buffed = new BuffedStatTable(c, bob);
 
         var before = buffed.get(Stat.ATKPercent);
 

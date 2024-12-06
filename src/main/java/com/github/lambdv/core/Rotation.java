@@ -21,7 +21,7 @@ public record Rotation(Map<String, DamageInstance> actions){
 
     public double compute(StatTable target, StatTable... buffs){
         var total = new BuffedStatTable(target, buffs);
-        return actions.values().parallelStream()
+        return actions.values().stream()
             .mapToDouble(f->f.apply(total))
             .sum();
     }

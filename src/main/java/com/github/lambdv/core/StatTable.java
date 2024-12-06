@@ -68,7 +68,9 @@ public interface StatTable extends Serializable{
     public static StatTable of(Stat s0, double v0, Stat s1, double v1, Stat s2, double v2, Stat s3, double v3, Stat s4, double v4, Stat s5, double v5, Stat s6, double v6, Stat s7, double v7){ return () -> Map.of(s0, v0, s1, v1, s2, v2, s3, v3, s4, v4, s5, v5, s6, v6, s7, v7); }
     public static StatTable of(Stat s0, double v0, Stat s1, double v1, Stat s2, double v2, Stat s3, double v3, Stat s4, double v4, Stat s5, double v5, Stat s6, double v6, Stat s7, double v7, Stat s8, double v8){ return () -> Map.of(s0, v0, s1, v1, s2, v2, s3, v3, s4, v4, s5, v5, s6, v6, s7, v7, s8, v8); }
     public static StatTable of(Stat s0, double v0, Stat s1, double v1, Stat s2, double v2, Stat s3, double v3, Stat s4, double v4, Stat s5, double v5, Stat s6, double v6, Stat s7, double v7, Stat s8, double v8, Stat s9, double v9){ return () -> Map.of(s0, v0, s1, v1, s2, v2, s3, v3, s4, v4, s5, v5, s6, v6, s7, v7, s8, v8, s9, v9); }
-    @SuppressWarnings("unchecked") public static StatTable of(Map<Stat, Double>... stats){ return () -> StatTables.merge(stats).stats(); }
+    @SuppressWarnings("unchecked") public static StatTable of(Map<Stat, Double>... stats){ 
+        return () -> StatTables.merge(stats).stats(); 
+    }
     public static StatTable of(StatTable... stats){ return () -> 
         StatTables.merge(stats).stats(); 
     }
@@ -94,23 +96,21 @@ interface DynamicStatTable extends StatTable {
 
 interface MutableStatTable extends StatTable{
     /**
-     * Set the amount value of a stat type stored in the stat table.
-     * @param type
-     * @param value
-     */
-    public default MutableStatTable set(Stat type, double value){
-        stats().put(type, value);
-        return this;
-    }
-
-    /**
      * Add the amount value of a stat type stored in the stat table.
      * @param type
      * @param value
      */
     public default MutableStatTable add(Stat type, double value){
-        stats().merge(type, value, Double::sum);
-        return this;
+        stats().merge(type, value, Double::sum); return this;
+    }
+
+    /**
+     * Set the amount value of a stat type stored in the stat table.
+     * @param type
+     * @param value
+     */
+    public default MutableStatTable set(Stat type, double value){
+        stats().put(type, value); return this;
     }
 
     /**
@@ -118,8 +118,7 @@ interface MutableStatTable extends StatTable{
      * @param type
      */
     public default MutableStatTable remove(Stat type){
-        stats().remove(type);
-        return this;
+        stats().remove(type); return this;
     }
 }
 
@@ -135,21 +134,12 @@ record ConcreteMutableStatTable(Map<Stat, Double> stats) implements MutableStatT
     public ConcreteMutableStatTable(){ this(new HashMap<>()); }
     public ConcreteMutableStatTable(StatTable statTable){ this(new HashMap<>(statTable.stats())); }
 }
-// record ConcreteMutableDynamicStatTable(Map<Stat, List<Function<StatTable, Double>>> dynamicStats) implements DynamicStatTable{
-//     public ConcreteMutableDynamicStatTable{
-//         assert dynamicStats != null;
-//         try{ this.add(Stat.ATKPercent, List.of(s->1.0)); }
-//         catch(Throwable t){ throw new IllegalArgumentException("dynamicStats must be a mutable map"); }
-//         finally{ dynamicStats.remove(Stat.ATKPercent); }
-//     }
-//     public ConcreteMutableDynamicStatTable(){ this(new HashMap<>()); }
-//     public ConcreteMutableDynamicStatTable(DynamicStatTable statTable){ this(new HashMap<>(statTable.dynamicStats())); }
-// }
 
 /**
  * concrete decorator pattern for adding buffs over a base stat table.
  */
 record BuffedStatTable(StatTable base, StatTable... buffs) implements StatTable{
+
     public BuffedStatTable(StatTable base, StatTable buffs){
         this(base, new StatTable[]{buffs});
     }
@@ -159,13 +149,7 @@ record BuffedStatTable(StatTable base, StatTable... buffs) implements StatTable{
     @Override public double get(Stat type){
         return base.get(type) + Arrays.stream(buffs).mapToDouble(b->b.get(type)).sum();
     }
-    public static BuffedStatTable of(StatTable base, StatTable... buffs){
-        return new BuffedStatTable(base, buffs);
-    }
 
-    public static BuffedStatTable of(StatTable base, StatTable buffs){
-        return new BuffedStatTable(base, buffs);
-    }
 } 
 
 /**
