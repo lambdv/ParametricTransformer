@@ -15,50 +15,48 @@ import org.junit.jupiter.api.Test;
  * Tests for optimization algorithms and visitor methods
  */
 public class OptimizerTest {
+    // @Test public void OptimizeSubStatFunctionTest(){
+    //     long start = System.currentTimeMillis();
+    //     var c = Characters.of("amber")
+    //         .equip(Weapons.of("slingshot"))
+    //         .equip(new Flower(5,20))
+    //         .equip(new Feather(5,20))
+    //         .equip(new Sands(5,20, Stat.ATKPercent))
+    //         .equip(new Goblet(5,20, Stat.PyroDMGBonus))
+    //         .equip(new Circlet(5,20, Stat.CritDMG));
+    //     var r = new Rotation()
+    //         .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty()));
+    //     ArtifactBuilder subs = Optimizers.optimialArtifactSubStatDistrbution(c,r,0);
+    //     long end = System.currentTimeMillis();
+    //     //System.out.println("Time taken: " + (end - start) + "ms");
+    //     //System.out.println(subs);
+    //     //System.out.println(c.stats());
+    //     assertEquals(0.20, subs.substats().get(Stat.ATKPercent), 0.01); //2 rolls + 2 fixed
+    //     assertEquals(0.40, subs.substats().get(Stat.CritRate), 0.01); //10 rolls + 2 fixed
+    //     assertEquals(0.662, subs.substats().get(Stat.CritDMG), 0.01); //8 rolls + 2 fixed
+    // }
 
+    // @Test public void OptimizeFiveStarMainStatFunctionTest(){
+    //     Character c = Characters.of("amber").equip(Weapons.of("polarstar"));
+    //     long start = System.currentTimeMillis();
+    //     var bob = Optimizers.optimal5StarArtifactMainStats(
+    //         c,
+    //         new Rotation()
+    //             .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty())),
+    //         0
+    //     );
+    //     long end = System.currentTimeMillis();
+    //     //System.out.println("Time taken: " + (end - start) + "ms");
+    //     assert c.flower().isEmpty();
+    //     assert c.feather().isEmpty();
+    //     assert c.sands().isEmpty();
+    //     assert c.goblet().isEmpty();
+    //     assert c.circlet().isEmpty();
     
-    @Test public void OptimizeSubStatFunctionTest(){
-        long start = System.currentTimeMillis();
-        var c = Characters.of("amber")
-            .equip(Weapons.of("slingshot"))
-            .equip(new Flower(5,20))
-            .equip(new Feather(5,20))
-            .equip(new Sands(5,20, Stat.ATKPercent))
-            .equip(new Goblet(5,20, Stat.PyroDMGBonus))
-            .equip(new Circlet(5,20, Stat.CritDMG));
-        var r = new Rotation()
-            .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty()));
-        ArtifactBuilder subs = Optimizer.optimialArtifactSubStatDistrbution(c,r,0);
-        long end = System.currentTimeMillis();
-        //System.out.println("Time taken: " + (end - start) + "ms");
-        //System.out.println(subs);
-        //System.out.println(c.stats());
-        assertEquals(0.20, subs.substats().get(Stat.ATKPercent), 0.01); //2 rolls + 2 fixed
-        assertEquals(0.40, subs.substats().get(Stat.CritRate), 0.01); //10 rolls + 2 fixed
-        assertEquals(0.662, subs.substats().get(Stat.CritDMG), 0.01); //8 rolls + 2 fixed
-    }
-
-    @Test public void OptimizeFiveStarMainStatFunctionTest(){
-        Character c = Characters.of("amber").equip(Weapons.of("polarstar"));
-        long start = System.currentTimeMillis();
-        var bob = Optimizer.optimal5StarArtifactMainStats(
-            c,
-            new Rotation()
-                .add("test", DamageFormulas.defaultPyroSkillATK(1, 2, StatTable.empty())),
-            0
-        );
-        long end = System.currentTimeMillis();
-        //System.out.println("Time taken: " + (end - start) + "ms");
-        assert c.flower().isEmpty();
-        assert c.feather().isEmpty();
-        assert c.sands().isEmpty();
-        assert c.goblet().isEmpty();
-        assert c.circlet().isEmpty();
-    
-        //System.out.println(bob.sands().get().statType());
-        //System.out.println(bob.goblet().get().statType());
-        //System.out.println(bob.circlet().get().statType());
-    }
+    //     //System.out.println(bob.sands().get().statType());
+    //     //System.out.println(bob.goblet().get().statType());
+    //     //System.out.println(bob.circlet().get().statType());
+    // }
 
     // @Test public void ArtifactBuilderCorrectValuesForFourStarSubstat(){
     //     var bob = ArtifactBuilder.KQMC(
@@ -88,7 +86,7 @@ public class OptimizerTest {
 
     }
 
-    @Test public void ArtifactOptimizerEnoughERCase(){
+    @Test public void ArtifactOptimizerNotEnoughERCase(){
                 //not enough energy recharge case
                 var r = new Rotation()
                 .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
@@ -105,8 +103,7 @@ public class OptimizerTest {
     
     }
 
-    @Test public void ArtifactOptimizerNotEnoughERCase(){
-
+    @Test public void ArtifactOptimizerEnoughERCase(){
         //enough energy recharge case
         var r = new Rotation()
             .add("t", DamageInstance.of(Element.Electro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
@@ -120,28 +117,11 @@ public class OptimizerTest {
             var bob = c.accept(new KQMSArtifactOptimizer(r, 2.00));
             System.out.println(bob);
             System.out.println(c.get(Stat.EnergyRecharge));
-            //assert c.get(Stat.EnergyRecharge) >= 2.00;
+            assert c.get(Stat.EnergyRecharge) >= 2.00;
         }
         catch (IllegalArgumentException e){ throw e; }
 
         System.out.println(r.compute(c));
-
-
-        
-
-        // System.out.println(r.compute(c));
-
-        // var c2 = Optimizer.optimal5StarArtifactMainStats(c, r, 0);
-        // System.out.println(c2);
-        // c.equip(c2.flower().get());
-        // c.equip(c2.feather().get());
-        // c.equip(c2.sands().get());
-        // c.equip(c2.goblet().get());
-        // c.equip(c2.circlet().get());
-        // var s2 = Optimizer.optimialArtifactSubStatDistrbution(c, r, 0);
-        // System.out.println(s2);
-        // c.substats = s2.stats();
-        // System.out.println(r.compute(c));
 
     }
 

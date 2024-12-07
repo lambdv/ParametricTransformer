@@ -15,12 +15,12 @@ public interface StatTableVisitor<T> {
 
 class CloneVisitor implements StatTableVisitor<StatTable> {
     public Character visitCharacter(Character c){
+
         var clone = new Character(c.name, 
             c.baseStats().getOrDefault(Stat.BaseHP, 0.0), 
             c.baseStats().getOrDefault(Stat.BaseATK, 0.0),
             c.baseStats().getOrDefault(Stat.BaseDEF, 0.0),
-            c.ascensionStatType,
-            c.baseStats().getOrDefault(c.ascensionStatType, 0.0)
+            c.ascensionStatType, c.ascensionStatAmount
         );
         c.weapon().ifPresent(w -> clone.equip(this.visitWeapon(w)));
         c.flower().ifPresent(f -> clone.equip(this.visitArtifact(f)));
@@ -32,7 +32,23 @@ class CloneVisitor implements StatTableVisitor<StatTable> {
         c.dynamicFluidStats().forEach((k,v) -> 
             v.forEach(f -> clone.add(k,f))
         );
-        c.substats().forEach((k,v) -> clone.add(k,v));
+        clone.setSubstats(c.substats());
+
+
+        var error = false;
+        for(Stat s : Stat.values()){
+            if(clone.get(s) != c.get(s)){
+                System.out.println("Error: " + s + " " + clone.get(s) + " " + c.get(s));
+                error = true;
+            }
+        }
+
+        if (error) throw new RuntimeException("Error in cloning character");
+
+        
+
+
+
         return clone;
     }
     public Weapon visitWeapon(Weapon w){

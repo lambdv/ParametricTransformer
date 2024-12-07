@@ -16,6 +16,7 @@ public class Character implements StatTable{
     public int level = 90;
     public String name;
     public Stat ascensionStatType;
+    public final double ascensionStatAmount;
     //composite stat tables
     private final Map<Stat, Double> baseStats; 
     private Map<Stat, Double> fluidStats; 
@@ -43,7 +44,8 @@ public class Character implements StatTable{
             Stat.CritDMG, 0.5,
             Stat.EnergyRecharge, 1.00
         ));
-        baseStats.merge(ascensionStatType, ascensionStatAmount, Double::sum);
+        ///baseStats.merge(ascensionStatType, ascensionStatAmount, Double::sum);
+        this.ascensionStatAmount = ascensionStatAmount;
         fluidStats = new HashMap<>();
         dynamicFluidStats = new HashMap<>();
 
@@ -90,6 +92,7 @@ public class Character implements StatTable{
      */
     @Override public double get(Stat type){
         return baseStats.getOrDefault(type, 0.0) 
+            + (ascensionStatType==type?ascensionStatAmount:0.0)
             + fluidStats.getOrDefault(type, 0.0)
             + weapon.map(w -> w.get(type)).orElse(0.0)
             + flower.map(f -> f.get(type)).orElse(0.0)
@@ -139,6 +142,17 @@ public class Character implements StatTable{
             case Circlet circlet -> this.circlet = Optional.of(circlet);
         } return this;
     }
+
+    public Character equip(ArtifactBuilder artifacts){
+        artifacts.flower().ifPresent(this::equip);
+        artifacts.feather().ifPresent(this::equip);
+        artifacts.sands().ifPresent(this::equip);
+        artifacts.goblet().ifPresent(this::equip);
+        artifacts.circlet().ifPresent(this::equip);
+        this.setSubstats(artifacts.substats());
+        return this;
+    }
+
 
     public void unequipWeapon(){weapon = Optional.empty();}
     public void unequipFlower(){flower = Optional.empty();}
@@ -192,6 +206,11 @@ public class Character implements StatTable{
         return visitor.visitCharacter(this);
     }
 
+    
+    public <T> T optimize(Optimizer<T> optimizer){
+        return optimizer.visitCharacter(this);
+    }
+
     /**
      * Creates a deep copy of the character
      */
@@ -213,7 +232,8 @@ public class Character implements StatTable{
     }
 
     public Character setSubstats(Map<Stat, Double> substats){
-        this.substats = new HashMap<>(substats); return this;
+        this.substats = substats; 
+        return this;
     }
 
     public Character clearSubstats(){
