@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.management.RuntimeErrorException;
+
 import java.util.List;
 
 interface Optimizer<T> extends StatTableVisitor<T> {
@@ -27,9 +30,9 @@ public class Optimizers {
 }   
 
 
-record KQMSArtifactOptimizer(Rotation r, double energyRechargeRequirements) implements StatTableVisitor<ArtifactBuilder> {
+record KQMSArtifactOptimizer(Rotation r, double energyRechargeRequirements) implements Optimizer<ArtifactBuilder> {
     public ArtifactBuilder visitCharacter(Character c){
-        var bob = OptimizationAlgorithms.optimal5StarArtifactMainStats(c, r, energyRechargeRequirements, x -> {});
+        var bob = OptimizationAlgorithms.optimal5StarArtifacts(c, r, energyRechargeRequirements, x -> {});
         c.equip(bob);
         return bob;
 
@@ -157,31 +160,29 @@ class OptimizationAlgorithms {
     }
 
     
-    public static ArtifactBuilder optimal5StarArtifactMainStats(final Character c, final Rotation r, double energyRechargeRequirements, Consumer<Character> callback){
-
-        Optional<ArtifactBuilder> bob = Optional.empty();
+    public static ArtifactBuilder optimal5StarArtifacts(final Character c, final Rotation r, double energyRechargeRequirements, Consumer<Character> callback
+        //int flowerLevel, int featherLevel, int sandsLevel, int gobletLevel, int circletLevel
+        //int flowerRarity, int featherRarity, int sandsRarity, int gobletRarity, int circletRarity
+    ){
         Character copy = c.clone();
-
-
         copy.unequipAllArtifacts();
         copy.clearSubstats();
-
-       
-
         double erWithErSands = copy.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge);
         double erWithErSandsAndSubs = erWithErSands + (Artifacts.getSubStatValue(5, Stat.EnergyRecharge) * Artifacts.RollQuality.AVG.multiplier * 8);
+
         if(erWithErSandsAndSubs < energyRechargeRequirements) 
             throw new IllegalArgumentException("Energy Recharge requirements cannot be met with mainstats alone");
         
+        Optional<ArtifactBuilder> bob = Optional.empty();
+
+
         copy.equip(new Flower(5, 20));
         copy.equip(new Feather(5, 20));
         double bestComboDPR = 0;
 
         var base = r.compute(copy);
-
         var sandsList = erWithErSands < energyRechargeRequirements ? List.of(Stat.EnergyRecharge) : new ArrayList<Stat>(Sands.allowlist().stream().filter(s -> r.compute(copy, StatTable.of(s, 1)) > base).toList());
-        if(!sandsList.contains(Stat.EnergyRecharge))
-            sandsList.add(Stat.EnergyRecharge);
+        if(!sandsList.contains(Stat.EnergyRecharge)) sandsList.add(Stat.EnergyRecharge);
         var gobletList = Goblet.allowlist().stream().filter(s -> r.compute(copy, StatTable.of(s, 1)) > base).toList();
         var circletList = Circlet.allowlist().stream().filter(s -> r.compute(copy, StatTable.of(s, 1)) > base).toList();
 
@@ -196,7 +197,7 @@ class OptimizationAlgorithms {
                         copy.clearSubstats();
                         bob2 = Optional.of(OptimizationAlgorithms.greedyOptimialSubStatDistrbution(copy, r, energyRechargeRequirements));
                         copy.setSubstats(bob2.get().substats());
-                        if (copy.get(Stat.EnergyRecharge) < energyRechargeRequirements) continue;
+                        //if (copy.get(Stat.EnergyRecharge) < energyRechargeRequirements) continue;
                         double thisComboDPR = r.compute(copy);
                         if (thisComboDPR > bestComboDPR) {
                             bestComboDPR = thisComboDPR;
@@ -206,52 +207,6 @@ class OptimizationAlgorithms {
                 }
             }
         }
-        System.out.println(copy.equip(bob.get()).stats());
-        return bob.get();
-        
-
-        // boolean needERSands = c.get(Stat.EnergyRecharge) < energyRechargeRequirements;
-        // boolean ERSandsIsntEnough = c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge) < energyRechargeRequirements;
-        // if(needERSands && ERSandsIsntEnough)
-        //     throw new IllegalArgumentException("Energy Recharge requirements cannot be met with mainstats alone");
-        
-        // Character copy = c.clone();
-        // copy.unequipAllArtifacts();
-        // //c.substats = new HashMap<>();
-        // c.clearSubstats();
-        // Flower bestFlower = new Flower(5, 20);
-        // Feather bestFeather = new Feather(5, 20);
-        // Sands bestSands = new Sands(1, 0, Stat.ATKPercent);
-        // Goblet bestGoblet = new Goblet(1, 0, Stat.ATKPercent);
-        // Circlet bestCirclet = new Circlet(1, 0, Stat.ATKPercent);
-
-        // copy.equip(bestFlower);
-        // copy.equip(bestFeather);
-
-        // double bestComboDPR = 0;
-        
-        // for(Stat sandsMainStat : needERSands ? List.of(Stat.EnergyRecharge) : Sands.allowlist()){
-        //     for(Stat gobletMainStat : Goblet.allowlist()){
-        //         for(Stat circletMainStat : Circlet.allowlist()){
-        //             copy.equip(new Sands(5, 20, sandsMainStat));
-        //             copy.equip(new Goblet(5, 20, gobletMainStat));
-        //             copy.equip(new Circlet(5, 20, circletMainStat));
-
-
-                   
-        //             double thisComboDPR = r.compute(copy);
-        //             if(thisComboDPR > bestComboDPR){
-        //                 bestComboDPR = thisComboDPR;
-        //                 bestSands = copy.sands().get();
-        //                 bestGoblet = copy.goblet().get();
-        //                 bestCirclet = copy.circlet().get();
-        //             }
-        //         }
-        //     }
-        // }
-        // copy.equip(bestSands);
-        // copy.equip(bestGoblet);
-        // copy.equip(bestCirclet);
-        // return new ArtifactBuilder(copy.flower().get(), copy.feather().get(), copy.sands().get(), copy.goblet().get(), copy.circlet().get());
+        return bob.orElseThrow(()->new RuntimeException("best artifact builder not found from optimization"));
     }
 }

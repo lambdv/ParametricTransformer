@@ -41,12 +41,6 @@ class CloneVisitor implements StatTableVisitor<StatTable> {
         assert Arrays.stream(Stat.values())
             .allMatch(s -> c.get(s) == clone.get(s)) 
             : "Character stats not equal";
-            
-
-        
-
-
-
         return clone;
     }
     public Weapon visitWeapon(Weapon w){

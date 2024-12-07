@@ -71,7 +71,8 @@ class DamageFormulas {
                 case None -> 1.0;
             };
 
-            double totalDMGBonus = total.get(Stat.DMGBonus)
+            double totalDMGBonus = total.get(Stat.DMGBonus) 
+                + total.get(Stat.ElementalDMGBonus)
                 + switch(element){
                     case Pyro -> total.get(Stat.PyroDMGBonus);
                     case Hydro -> total.get(Stat.HydroDMGBonus);
@@ -128,6 +129,48 @@ class DamageFormulas {
 
     public static DamageInstance defaultPyroSkillATK(double instances, double motionValue, StatTable buffs){
         return of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, instances, motionValue, buffs);
+    }
+
+    public static DamageInstance defaultPyroSkillATK(double instances, double motionValue){
+        return of(Element.Pyro, DamageType.Skill, BaseScaling.ATK, Amplifier.None, instances, motionValue, StatTable.empty());
+    }
+
+    public static DamageInstance defaultCryoNormalATK(double instances, double motionValue, StatTable buffs){
+        return of(Element.Cryo, DamageType.Normal, BaseScaling.ATK, Amplifier.None, instances, motionValue, buffs);
+    }
+
+    public static DamageInstance defaultCryoNormalATK(double instances, double motionValue){
+        return of(Element.Cryo, DamageType.Normal, BaseScaling.ATK, Amplifier.None, instances, motionValue, StatTable.empty());
+    }
+
+    public static DamageInstance defaultCryoChargedATK(double instances, double motionValue){
+        return of(Element.Cryo, DamageType.Charged, BaseScaling.ATK, Amplifier.None, instances, motionValue, StatTable.empty());
+    }
+
+
+    public static DamageInstance defaultCryoChargedATK(double instances, double motionValue, StatTable buffs){
+        return of(Element.Cryo, DamageType.Charged, BaseScaling.ATK, Amplifier.None, instances, motionValue, buffs);
+    }
+
+    public static DamageInstance defaultCryoSkillATK(double instances, double motionValue){
+        return of(Element.Cryo, DamageType.Skill, BaseScaling.ATK, Amplifier.None, instances, motionValue, StatTable.empty());
+    }
+
+
+    public static DamageInstance defaultCryoSkillATK(double instances, double motionValue, StatTable buffs){
+        return of(Element.Cryo, DamageType.Skill, BaseScaling.ATK, Amplifier.None, instances, motionValue, buffs);
+    }
+
+    public static DamageInstance defaultCryoBurstATK(double instances, double motionValue){
+        return of(Element.Cryo, DamageType.Burst, BaseScaling.ATK, Amplifier.None, instances, motionValue, StatTable.empty());
+    }
+
+    public static DamageInstance defaultCryoBurstATK(double instances, double motionValue, StatTable buffs){
+        return of(Element.Cryo, DamageType.Burst, BaseScaling.ATK, Amplifier.None, instances, motionValue, buffs);
+    }
+
+    public static DamageInstance defaultCryoBurstATK(double instances, double motionValue, Amplifier amplifier){
+        return of(Element.Cryo, DamageType.Burst, BaseScaling.ATK, amplifier, instances, motionValue, StatTable.empty());
     }
 
     private DamageFormulas(){}

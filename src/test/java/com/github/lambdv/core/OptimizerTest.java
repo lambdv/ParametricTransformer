@@ -87,8 +87,8 @@ public class OptimizerTest {
     }
 
     @Test public void ArtifactOptimizerNotEnoughERCase(){
-                //not enough energy recharge case
-                var r = new Rotation()
+            //not enough energy recharge case
+            var r = new Rotation()
                 .add("t", DamageInstance.of(Element.Pyro, DamageType.Normal, BaseScaling.ATK, Amplifier.None, 1, 1.00, StatTable.of()));
             var c = Characters.of("hutao");
                 // .equip(Weapons.of("thecatch"));
@@ -100,7 +100,6 @@ public class OptimizerTest {
                 //assert e.getMessage().equals("Energy Recharge requirements cannot be met with substats alone");
                 //System.out.println(c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge));
             }
-    
     }
 
     @Test public void ArtifactOptimizerEnoughERCase(){
@@ -118,11 +117,8 @@ public class OptimizerTest {
             System.out.println(bob);
             System.out.println(c.get(Stat.EnergyRecharge));
             assert c.get(Stat.EnergyRecharge) >= 2.00;
-        }
-        catch (IllegalArgumentException e){ throw e; }
-
-        System.out.println(r.compute(c));
-
+        } catch (IllegalArgumentException e){ throw e; }
+        //System.out.println(r.compute(c));
     }
 
     @Test public void AcceptArtifactOptimizerWithRotations(){

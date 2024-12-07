@@ -1,6 +1,8 @@
 package com.github.lambdv.core;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
+
 import com.github.lambdv.core.Stat;
 import com.github.lambdv.core.Weapon;
 
@@ -206,16 +208,45 @@ public class Character implements StatTable{
         return visitor.visitCharacter(this);
     }
 
-    
-    public <T> T optimize(Optimizer<T> optimizer){
-        return optimizer.visitCharacter(this);
+    public <T> T accept(Supplier<StatTableVisitor<T>> visitor){
+        return this.accept(visitor.get());
+    }
+
+    public <T> T optimize(StatTableVisitor<T> visitor){
+        return visitor.visitCharacter(this);
+    }
+
+    public <T> T optimize(Supplier<StatTableVisitor<T>> visitor){
+        return this.optimize(visitor.get());
     }
 
     /**
      * Creates a deep copy of the character
      */
     public Character clone(){
-        return (Character) this.accept(new CloneVisitor());
+        var c = this;
+        var clone = new Character(c.name, 
+            c.baseStats().getOrDefault(Stat.BaseHP, 0.0), 
+            c.baseStats().getOrDefault(Stat.BaseATK, 0.0),
+            c.baseStats().getOrDefault(Stat.BaseDEF, 0.0),
+            c.ascensionStatType, c.ascensionStatAmount
+        );
+        clone.fluidStats = new HashMap<>(c.fluidStats);
+        clone.dynamicFluidStats = new HashMap<>(c.dynamicFluidStats);
+        //alicing risk but all fields should be immutable
+        clone.weapon = c.weapon;
+        clone.flower = c.flower;
+        clone.feather = c.feather;
+        clone.sands = c.sands;
+        clone.goblet = c.goblet;
+        clone.circlet = c.circlet;
+        clone.substats = new HashMap<>(c.substats);
+        clone.artifactSet2Piece = new HashMap<>(c.artifactSet2Piece);
+        clone.artifactSet4Piece = new HashMap<>(c.artifactSet4Piece);
+        assert Arrays.stream(Stat.values())
+            .allMatch(s -> c.get(s) == clone.get(s)) 
+            : "Character stats not equal";
+        return clone;
     }
 
     public Map<Stat, Double> baseStats(){

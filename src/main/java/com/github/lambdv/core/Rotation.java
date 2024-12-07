@@ -1,6 +1,5 @@
 package com.github.lambdv.core;
 import java.util.*;
-import java.util.concurrent.StructuredTaskScope;
 import java.util.function.Function;
 
 /**
@@ -14,7 +13,7 @@ public record Rotation(Map<String, DamageInstance> actions){
         this(new HashMap<>());
     }
     public double compute(StatTable target){
-        return actions.values().parallelStream()
+        return actions.values().stream()
             .mapToDouble(f->f.apply(target))
             .sum();
     }
