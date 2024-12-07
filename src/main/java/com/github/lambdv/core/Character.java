@@ -240,6 +240,14 @@ public class Character implements StatTable{
         substats = new HashMap<>(); return this;
     }
 
+    public Map<Stat, Double> artifactSet2Piece(){
+        return Collections.unmodifiableMap(artifactSet2Piece);
+    }
+
+    public Map<Stat, Double> artifactSet4Piece(){
+        return Collections.unmodifiableMap(artifactSet4Piece);
+    }
+
     public Character setArtifactSet2Piece(Map<Stat, Double> artifactSet2Piece){
         this.artifactSet2Piece = artifactSet2Piece; return this;
     }

@@ -1,5 +1,6 @@
 package com.github.lambdv.core;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -33,17 +34,14 @@ class CloneVisitor implements StatTableVisitor<StatTable> {
             v.forEach(f -> clone.add(k,f))
         );
         clone.setSubstats(c.substats());
+        clone.setArtifactSet2Piece(c.artifactSet2Piece());
+        clone.setArtifactSet4Piece(c.artifactSet4Piece());
 
 
-        var error = false;
-        for(Stat s : Stat.values()){
-            if(clone.get(s) != c.get(s)){
-                System.out.println("Error: " + s + " " + clone.get(s) + " " + c.get(s));
-                error = true;
-            }
-        }
-
-        if (error) throw new RuntimeException("Error in cloning character");
+        assert Arrays.stream(Stat.values())
+            .allMatch(s -> c.get(s) == clone.get(s)) 
+            : "Character stats not equal";
+            
 
         
 
