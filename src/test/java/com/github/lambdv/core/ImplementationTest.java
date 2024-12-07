@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
+import com.github.lambdv.core.*;
+
 
 /**
  * Tests for a full implementation of the library as a framework for Genshin Impact damage calculations
