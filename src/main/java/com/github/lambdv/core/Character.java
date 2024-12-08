@@ -12,7 +12,7 @@ import com.github.lambdv.core.Weapon;
  * @note is a composite of an immutable base stats, a weapon, artifacts and a mutable fluid stat table
  * @note is a generalization of the Builder pattern for constructing characters through Mutation
  */
-public class Character implements StatTable{
+public class Character implements MutableStatTable{
     private static final long serialVersionUID = 1L;
     //character identity details
     public int level = 90;

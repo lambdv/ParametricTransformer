@@ -40,7 +40,5 @@ Core can be used standalone for damage calculation programmatically in Java or t
   var dps = ayakaRotation.compute(ayaka)/21;
 ```
 ## Usage: GUI (WIP)
-PT comes with a launcher for a suite of programs made with the core library for users to interface with using a GUI.
 
-## Usage: API/HTTPServer (WIP)
-PT's HTTPServer found in the API package is a function as a service to allow a decoupled interface to interact with PT using HTTP JSON/XML requests
+## Usage: API (WIP)
