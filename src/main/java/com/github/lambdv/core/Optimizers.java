@@ -8,99 +8,53 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.management.RuntimeErrorException;
-
 import java.util.List;
-
-interface Optimizer<T> extends StatTableVisitor<T> {
-    T visitCharacter(Character c);
-    T visitWeapon(Weapon w);
-    T visitArtifact(Artifact a);
-    T visitStatTable(StatTable s);
-}
 
 /**
  * Utility class that provides optimization algorithms for a given character and rotation.
  */
 public class Optimizers {
+    /**
+     * Factory for Visitor that finds and equips the optimal 5 star artifact mainstats and substats for a given character based on a given rotation.
+     * @param r
+     * @param energyRechargeRequirements
+     * @return
+     */
     public static StatTableVisitor<ArtifactBuilder> KQMSArtifactOptimizer(Rotation r, double energyRechargeRequirements){
-        return new KQMSArtifactOptimizer(r, energyRechargeRequirements);
-    }
-}   
-
-
-record KQMSArtifactOptimizer(Rotation r, double energyRechargeRequirements) implements Optimizer<ArtifactBuilder> {
-    public ArtifactBuilder visitCharacter(Character c){
-        var bob = OptimizationAlgorithms.optimal5StarArtifacts(c, r, energyRechargeRequirements, x -> {});
-        c.equip(bob);
-        return bob;
-
-
-        // if(c.get(Stat.EnergyRecharge) + Artifacts.getMainStatValue(5, 20, Stat.EnergyRecharge) + 
-        // (Artifacts.getSubStatValue(5, Stat.EnergyRecharge) * Artifacts.RollQuality.AVG.multiplier * 8) < energyRechargeRequirements) 
-        //     throw new IllegalArgumentException("Energy Recharge requirements cannot be met");
-
-        // Optional<ArtifactBuilder> bob = Optional.empty();
-        // c.unequipAllArtifacts();
-        // c.clearSubstats();
-        // c.equip(new Flower(5, 20));
-        // c.equip(new Feather(5, 20));
-        // double bestComboDPR = 0;
-
-
-        // var base = r.compute(c);
-
-        // var sandsList = new ArrayList<Stat>(Sands.allowlist().stream().filter(s -> r.compute(c, StatTable.of(s, 1)) > base).toList());
-        // sandsList.add(Stat.EnergyRecharge);
-        // var gobletList = Goblet.allowlist().stream().filter(s -> r.compute(c, StatTable.of(s, 1)) > base).toList();
-        // var circletList = Circlet.allowlist().stream().filter(s -> r.compute(c, StatTable.of(s, 1)) > base).toList();
-
-        // for (Stat sandsMainStat : sandsList) {
-        //     for (Stat gobletMainStat : gobletList) {
-        //         for (Stat circletMainStat : circletList) {
-        //             Optional<ArtifactBuilder> bob2 = Optional.empty();
-        //             try {
-        //                 c.equip(new Sands(5, 20, sandsMainStat));
-        //                 c.equip(new Goblet(5, 20, gobletMainStat));
-        //                 c.equip(new Circlet(5, 20, circletMainStat));
-        //                 c.clearSubstats();
-        //                 bob2 = Optional.of(OptimizationAlgorithms.greedyOptimialSubStatDistrbution(c, r, energyRechargeRequirements));
-        //                 c.setSubstats(bob2.get().substats());
-        //                 if (c.get(Stat.EnergyRecharge) < energyRechargeRequirements) continue;
-        //                 double thisComboDPR = r.compute(c);
-        //                 if (thisComboDPR > bestComboDPR) {
-        //                     bestComboDPR = thisComboDPR;
-        //                     bob = bob2;
-        //                 }
-        //             } catch (IllegalArgumentException e) {continue;}
-        //         }
-        //     }
-        // }
-        // c.equip(bob.get().sands().get());
-        // c.equip(bob.get().goblet().get());
-        // c.equip(bob.get().circlet().get());
-        // c.setSubstats(bob.get().substats());
-        // return bob.get();
+        return new StatTableVisitor<ArtifactBuilder>(){
+            public ArtifactBuilder visitCharacter(Character c){
+                var bob = Optimizers.optimal5StarArtifacts(c, r, energyRechargeRequirements, x -> {});
+                c.equip(bob);
+                return bob;
+            }
+            UnsupportedOperationException error = new UnsupportedOperationException("KQMSArtifactOptimizer only supports Characters");
+            public ArtifactBuilder visitWeapon(Weapon w){ throw error;}
+            public ArtifactBuilder visitArtifact(Artifact a){ throw error; }
+            public ArtifactBuilder visitStatTable(StatTable s){ throw error; }
+        };
     }
 
-    public ArtifactBuilder visitWeapon(Weapon w){ throw new UnsupportedOperationException("Not yet implemented");}
-    public ArtifactBuilder visitArtifact(Artifact a){ throw new UnsupportedOperationException("Not yet implemented"); }
-    public ArtifactBuilder visitStatTable(StatTable s){ throw new UnsupportedOperationException("Not yet implemented"); }
-}
-
-
-class OptimizationAlgorithms {
-    public static ArtifactBuilder gradientOptimialSubStatDistrbution(final Character c, final Rotation r, double energyRechargeRequirements) throws IllegalArgumentException{
+    /**
+     * Search algorithm for finding the optimal substat distribution for a given character and rotation.
+     * @note This method is deprecated due to being less efficent and less accurate than the greedy approach. Use {@link #greedyOptimialSubStatDistrbution(Character, Rotation, double)} instead.
+     * This method finds the next best substat to roll for the current valley for each step, which often alternates between multiple types. This may be accurate compared to a full global search to find the absolute best combination of substats.
+     * @note This algorithm is not guaranteed to find the true optimal solution, but it is guaranteed to find a local maximum using gradient ascent.
+     * @param c
+     * @param r
+     * @param energyRechargeRequirements
+     * @return
+     * @throws IllegalArgumentException
+     */
+    @Deprecated
+    public static ArtifactBuilder optimalSubStatDistributionGradientSearch(final Character c, final Rotation r, double energyRechargeRequirements) throws IllegalArgumentException{
         var bob = ArtifactBuilder.KQMC(c.flower(),c.feather(),c.sands(),c.goblet(),c.circlet());
         var target = new BuffedStatTable(c.build(), ()->bob.substats()); 
         try{
             while (target.get(Stat.EnergyRecharge) < energyRechargeRequirements)
                 bob.roll(Stat.EnergyRecharge, Artifacts.RollQuality.AVG);
         } catch (AssertionError e){ throw new IllegalArgumentException("Energy Recharge requirements cannot be met with substats alone");}
-
         Set<Stat> possibleSubsToRoll = ArtifactBuilder.possibleSubStats().collect(Collectors.toSet());
-
         while (bob.numRollsLeft() > 0 && !possibleSubsToRoll.isEmpty()){
             var bestSub = possibleSubsToRoll.stream()
                 .filter(s->bob.numRollsLeft(s) > 0)
@@ -118,24 +72,30 @@ class OptimizationAlgorithms {
                 })
                 .reduce((x,y) -> x.getValue() >= y.getValue() ? x : y)
                 .get().getKey();
-            //System.out.println(bestSub);
             bob.roll(bestSub, Artifacts.RollQuality.AVG);
         }
         return bob;
     }
 
-    public static ArtifactBuilder greedyOptimialSubStatDistrbution(final Character c, final Rotation r, double energyRechargeRequirements) throws IllegalArgumentException{
+    /**
+     * Search algorithm for finding the optimal substat distribution for a given character and rotation.
+     * @note This algorithm is not guaranteed to find the true optimal solution, but it is guaranteed to find a local maximum using greedy ascent.
+     * @note Instead of rolling the next best substat (which often alternates between multiple types) this finds the best substat to roll for the current state of the artifact and maxes it out.
+     * @param c
+     * @param r
+     * @param energyRechargeRequirements
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public static ArtifactBuilder optimalSubStatDistributionGreedySearch(final Character c, final Rotation r, double energyRechargeRequirements) throws IllegalArgumentException{
         var bob = ArtifactBuilder.KQMC(c.flower(),c.feather(),c.sands(),c.goblet(),c.circlet());
         var target = new BuffedStatTable(c.build(), ()->bob.substats()); 
         try{
             while (target.get(Stat.EnergyRecharge) < energyRechargeRequirements && bob.numRollsLeft(Stat.EnergyRecharge) > 0)
                 bob.roll(Stat.EnergyRecharge, Artifacts.RollQuality.AVG);
         } catch (AssertionError e){ throw new IllegalArgumentException("Energy Recharge requirements cannot be met with substats alone");}
-
-        assert target.get(Stat.EnergyRecharge) >= energyRechargeRequirements : "Energy Recharge requirements cannot be met with substats alone";
-
+        //assert target.get(Stat.EnergyRecharge) >= energyRechargeRequirements : "Energy Recharge requirements cannot be met with substats alone";
         Set<Stat> possibleSubsToRoll = ArtifactBuilder.possibleSubStats().collect(Collectors.toSet());
-
         while (bob.numRollsLeft() > 0 && !possibleSubsToRoll.isEmpty()){
             var bestSub = possibleSubsToRoll.stream()
                 .filter(s->bob.numRollsLeft(s) > 0)
@@ -175,7 +135,6 @@ class OptimizationAlgorithms {
         
         Optional<ArtifactBuilder> bob = Optional.empty();
 
-
         copy.equip(new Flower(5, 20));
         copy.equip(new Feather(5, 20));
         double bestComboDPR = 0;
@@ -195,7 +154,7 @@ class OptimizationAlgorithms {
                         copy.equip(new Goblet(5, 20, gobletMainStat));
                         copy.equip(new Circlet(5, 20, circletMainStat));
                         copy.clearSubstats();
-                        bob2 = Optional.of(OptimizationAlgorithms.greedyOptimialSubStatDistrbution(copy, r, energyRechargeRequirements));
+                        bob2 = Optional.of(Optimizers.optimalSubStatDistributionGreedySearch(copy, r, energyRechargeRequirements));
                         copy.setSubstats(bob2.get().substats());
                         //if (copy.get(Stat.EnergyRecharge) < energyRechargeRequirements) continue;
                         double thisComboDPR = r.compute(copy);

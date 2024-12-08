@@ -77,9 +77,10 @@ public class OptimizerTest {
         var c = Characters.of("hutao")
             .equip(Weapons.of("dragonsbane"));
         var before = r.compute(c);
-        c.accept(
-            new KQMSArtifactOptimizer(r,0)
-        );
+        // c.accept(
+        //     new KQMSArtifactOptimizer(r,0)
+        // );
+        var bob = c.accept(Optimizers.KQMSArtifactOptimizer(r, 0));
         //System.out.println(bob);
         var after = r.compute(c);
         assert before < after;
@@ -93,7 +94,8 @@ public class OptimizerTest {
             var c = Characters.of("hutao");
                 // .equip(Weapons.of("thecatch"));
             try{
-                c.accept(new KQMSArtifactOptimizer(r, 2.00));
+                //c.accept(new KQMSArtifactOptimizer(r, 2.00));
+                c.accept(Optimizers.KQMSArtifactOptimizer(r, 2.0));
                 assert false;
             }
             catch (Throwable e){
@@ -113,7 +115,9 @@ public class OptimizerTest {
             ))
         ;
         try{
-            var bob = c.accept(new KQMSArtifactOptimizer(r, 2.00));
+            //var bob = c.accept(new KQMSArtifactOptimizer(r, 2.00));
+            var bob = c.accept(Optimizers.KQMSArtifactOptimizer(r, 2.0));
+
             System.out.println(bob);
             System.out.println(c.get(Stat.EnergyRecharge));
             assert c.get(Stat.EnergyRecharge) >= 2.00;

@@ -263,7 +263,7 @@ public class Character implements StatTable{
     }
 
     public Character setSubstats(Map<Stat, Double> substats){
-        this.substats = substats; 
+        this.substats = new HashMap<>(substats); 
         return this;
     }
 

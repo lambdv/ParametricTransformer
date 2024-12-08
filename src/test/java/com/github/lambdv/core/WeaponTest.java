@@ -60,13 +60,15 @@ public class WeaponTest {
 
 
     @Test public void multiOfMethod(){
-        var ws = Weapons.of("Ibis Piercer", "Mistsplitter Reforged");
-        assertNotNull(ws);
+        //var ws = Weapons.of("Ibis Piercer", "Mistsplitter Reforged");
+        Weapons.of("Ibis Piercer", "Mistsplitter Reforged");
+
+        //assertNotNull(ws);
         // assertTrue(ws.size() == 2);
         // assertTrue(ws.containsKey("ibispiercer"));
         // assertTrue(ws.containsKey("mistsplitterreforged"));
-        assertTrue(ws.get("ibispiercer") == Weapons.of("ibis piercer"));
-        assertTrue(ws.get("mistsplitterreforged") == Weapons.of("mistsplitter reforged"));
+        assertTrue(Weapons.of("ibispiercer") == Weapons.of("ibis piercer"));
+        assertTrue(Weapons.of("mistsplitterreforged") == Weapons.of("mistsplitter reforged"));
         
         try{
             Weapons.of("Not a weapon");

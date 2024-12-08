@@ -43,7 +43,6 @@ public enum Stat {
     BurstDMGBonus, 
     HealingBonus,
     None,
-    
     //hidden stats
     ReactionBonus,
     DefReduction,
@@ -55,11 +54,17 @@ public enum Stat {
     AnemoResistanceReduction,
     GeoResistanceReduction,
     DendroResistanceReduction,
-    PhysicalResistanceReduction,   
-    ;
+    PhysicalResistanceReduction;
 
     public static Stat parseStat(String typeName){
         return StatAdaptor.parseStat(typeName);
+    }
+
+    public boolean isElementalDMGBonus(){
+        return switch(this){
+            case PyroDMGBonus, CryoDMGBonus, GeoDMGBonus, DendroDMGBonus, ElectroDMGBonus, HydroDMGBonus, AnemoDMGBonus -> true;
+            default -> false;
+        };
     }
 
     private class StatAdaptor{
@@ -89,13 +94,6 @@ public enum Stat {
             )
             .orElseThrow(()->new IllegalArgumentException("Invalid stat type: " + typeName));
         }
-    }
-
-    public boolean isElementalDMGBonus(){
-        return switch(this){
-            case PyroDMGBonus, CryoDMGBonus, GeoDMGBonus, DendroDMGBonus, ElectroDMGBonus, HydroDMGBonus, AnemoDMGBonus -> true;
-            default -> false;
-        };
     }
 };
 

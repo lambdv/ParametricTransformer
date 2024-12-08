@@ -6,6 +6,10 @@ import java.util.function.Function;
  */
 public interface DamageInstance extends Function<StatTable, Double>{
     Double apply(StatTable target);
+
+
+    
+
     public static DamageInstance of(Element element, DamageType type, BaseScaling scaling, Amplifier amplifier, double instances, double motionValue, StatTable buffs){
         return DamageFormulas.of(element, type, scaling, amplifier, instances, motionValue, buffs);
     }
@@ -20,24 +24,9 @@ enum BaseScaling{ ATK, DEF, HP }
 enum Amplifier{ 
     Forward(2), Reverse(1.5), None(1);
     double multiplier;
-    private Amplifier(double m) { this.multiplier = m; }
+    private Amplifier(double m){this.multiplier = m;}
 }
 enum ReactionType { Overloaded, Superconduct, Electrocharged, Swirl, Shattered, Aggravate, Spread }
-
-// record DMG(
-//     Function<StatTable, Double> formula, 
-//     Element element, 
-//     DamageType type, 
-//     BaseScaling scaling, 
-//     Amplifier amplifier, 
-//     double instances, 
-//     double motionValue, 
-//     StatTable buffs
-// ) implements Function<StatTable, Double>{ 
-//     public Double apply(StatTable target){
-//         return formula.apply(target);
-//     }
-// }
 
 /**
  * Utility class for methods returing damage instance lambda objects

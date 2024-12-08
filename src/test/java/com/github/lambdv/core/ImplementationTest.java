@@ -31,8 +31,8 @@ public class ImplementationTest {
             .add("burstcutts", DamageFormulas.defaultCryoBurstATK(19.0, 1.91))
             .add("burstexplosion", DamageFormulas.defaultCryoBurstATK(1.0, 2.86));
         ayaka.optimize(Optimizers.KQMSArtifactOptimizer(ayakaRotation, 1.30));
-        var dps = ayakaRotation.compute(ayaka)/21;
-        System.err.println("Ayaka DPS: " + dps);
+        var dps = ayakaRotation.compute(ayaka.build())/21;
+        //System.out.println("Ayaka DPS: " + dps);
         assertEquals(38354, dps, 500);
     }
 }

@@ -1,5 +1,5 @@
 # Parametric Transformer
-> computation engine for genshin impact damage/stat calculation and optimization
+> computation engine for genshin impact damage/stat calculation and optimization.
  PT provides abstraction to model stats tables, algorithms for stat/gearing optimization and a framework for character damage-per-rotation calculation.
 
 ## Installation

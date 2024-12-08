@@ -14,10 +14,7 @@ import com.github.lambdv.utils.*;
  */
 public final class Weapons {
     private static volatile Map<String, Weapon> cache = Collections.synchronizedMap(new HashMap<String, Weapon>()); //cache for weapons
-    //private static final Map<String, Weapon> cache = Collections.synchronizedMap(new HashMap<String, Weapon>()); //cache for weapons
-
     private static final Path databasePath = Paths.get("").toAbsolutePath().resolve("src/resources/data/weapons.csv");
-    public enum WeaponFactory{ Instance; public Weapon get(String name){return Weapons.of(name);} }
     
     /**
      * Factory method for getting a weapon from the database
@@ -40,9 +37,8 @@ public final class Weapons {
      * @return
      * @throws RuntimeException exception is leaked if weapon is not found: program should crash
      */
-    public static WeaponFactory of(String... names){
+    public static void of(String... names){
         Weapons.cashe(names);
-        return WeaponFactory.Instance;
     }
 
     public static void cashe(String name){
@@ -93,12 +89,11 @@ public final class Weapons {
     public static void cacheAll(){
         try {
             Files.lines(databasePath)
-                .parallel()
+                //.parallel()
                 .skip(1)
                 .map(line -> line.split(", "))
                 .map(Weapons::parseWeapon)
-                //.forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
-                ;
+                .forEach(w -> cache.put(StandardUtils.flattenName(w.name()), w));
             }
         catch(Exception e){ throw new RuntimeException("Error reading database: " + e.getMessage()); }
     }

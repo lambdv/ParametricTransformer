@@ -9,3 +9,12 @@ public record ArtifactSet(
         return new ArtifactSet("", Map.of(), Map.of());
     }
 }
+
+enum ArtifactSetBonus implements StatTable{
+    BlizzardStrayer(){
+        @Override public Map<Stat, Double> stats() {
+            return Map.of(Stat.CryoDMGBonus, 15.0);
+        }
+    }
+    ;
+}
