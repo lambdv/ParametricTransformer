@@ -208,17 +208,13 @@ public class Character implements MutableStatTable{
         return visitor.visitCharacter(this);
     }
 
-    public <T> T accept(Supplier<StatTableVisitor<T>> visitor){
-        return this.accept(visitor.get());
-    }
 
     public <T> T optimize(StatTableVisitor<T> visitor){
         return visitor.visitCharacter(this);
     }
 
-    public <T> T optimize(Supplier<StatTableVisitor<T>> visitor){
-        return this.optimize(visitor.get());
-    }
+
+    
 
     /**
      * Creates a deep copy of the character

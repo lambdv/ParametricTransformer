@@ -1,0 +1,4 @@
+- http API
+- refactor/redesign code
+- more testing & practical uses
+- implement set bonuses, motion value multiplier + buff presets that come along with each character
