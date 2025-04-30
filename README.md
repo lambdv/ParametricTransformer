@@ -19,7 +19,7 @@ mvn install
 The core package is a framework as a library for Genshin Impact stat modeling, calculations and optimizations. 
 Core can be used standalone for damage calculation programmatically in Java or to make your own applications/
 ```java
-  import com.github.lambdv.core.*;
+  import com.github.lambdv.ParametricTransformer.core.*;
   var ayaka = Characters.of("ayaka")
     .equip(Weapons.of("mistsplitter"))
     .add(StatTable.of(
