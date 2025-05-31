@@ -2,7 +2,7 @@
 # Parametric Transformer
 
 > ⚠️ **Sunsetted**  
-> this project has been sunsetted and no longer maintained. for a similar library, consider checking out the rust reimplementation at https://github.com/lambdv/aminu.
+> this project has been sunsetted and no longer maintained. for a similar library, consider checking out the rust reimplementation at https://github.com/lambdv/aminus.
 
 > framework for genshin impact damage/stat calculation and optimization.
 
