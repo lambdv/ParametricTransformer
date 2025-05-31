@@ -107,7 +107,8 @@ public class Optimizers {
                     finally{ bob.unRoll(s); }
                 })
                 .map(e-> {
-                    if(e.getValue() == 0) possibleSubsToRoll.remove(e.getKey());
+                    if(e.getValue() == 0) 
+                        possibleSubsToRoll.remove(e.getKey());
                     return e;
                 })
                 .reduce((x,y) -> x.getValue() >= y.getValue() ? x : y)

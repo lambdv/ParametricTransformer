@@ -7,9 +7,6 @@ import java.util.function.Function;
 public interface DamageInstance extends Function<StatTable, Double>{
     Double apply(StatTable target);
 
-
-    
-
     public static DamageInstance of(Element element, DamageType type, BaseScaling scaling, Amplifier amplifier, double instances, double motionValue, StatTable buffs){
         return DamageFormulas.of(element, type, scaling, amplifier, instances, motionValue, buffs);
     }

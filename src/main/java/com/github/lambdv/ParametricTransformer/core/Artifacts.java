@@ -1,9 +1,7 @@
 package com.github.lambdv.ParametricTransformer.core;
-import java.util.Random;
-
 import org.json.JSONObject;
-
 import com.github.lambdv.ParametricTransformer.utils.AssetManager;
+
 /**
  * Utility class for getting artifact stat values
  */

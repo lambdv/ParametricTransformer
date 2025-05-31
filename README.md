@@ -1,6 +1,6 @@
 # Parametric Transformer
-> computation engine for genshin impact damage/stat calculation and optimization.
- PT provides abstraction to model stats tables, algorithms for stat/gearing optimization and a framework for character damage-per-rotation calculation.
+> framework for genshin impact damage/stat calculation and optimization.
+> 
 
 ## Installation
  1. **Clone The Repository**
@@ -15,9 +15,7 @@
 ```
 mvn install
 ```
-## Usage: Core
-The core package is a framework as a library for Genshin Impact stat modeling, calculations and optimizations. 
-Core can be used standalone for damage calculation programmatically in Java or to make your own applications/
+## Usage
 ```java
   import com.github.lambdv.ParametricTransformer.core.*;
   var ayaka = Characters.of("ayaka")
@@ -39,6 +37,3 @@ Core can be used standalone for damage calculation programmatically in Java or t
   ayaka.optimize(Optimizers.KQMSArtifactOptimizer(ayakaRotation, 1.30));
   var dps = ayakaRotation.compute(ayaka)/21;
 ```
-## Usage: GUI (WIP)
-
-## Usage: API (WIP)
